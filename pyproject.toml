@@ -3,11 +3,11 @@ requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mypackage"
-version = "0.1.0"
+name = "vlab4mic-jupyter"
+version = "0.0.1"
 description = "My python package"
 authors = [
-    { name = "Damian Martinez", email = "example_email_123@example.server.com" }
+    { name = "Damian Martinez", email = "damian.martinez@itqb.unl.pt" }
 ]
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { text = "MIT" }
@@ -17,10 +17,14 @@ classifiers = [
     "Operating System :: OS Independent"
 ]
 requires-python = ">= 3.9"
-dependencies = []
+dependencies = [
+    "jupyterlab>=4.3.4",
+    "ipywidgets>=8.1.5"
+    "ezinput>=0.0.6",
+]
 
 [project.optional-dependencies]
-all = ["mypackage[dev, test]"]
+all = ["vlab4mic-jupyter[dev, test]"]
 dev = [
     "pre-commit>=3.7.0",
     "ipykernel>=6.29.4",
