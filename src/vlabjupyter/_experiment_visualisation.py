@@ -37,14 +37,13 @@ Each function returns an EZInput-based widget for use in a Jupyter notebook.
 from ezinput import EZInput
 import matplotlib.pyplot as plt
 from IPython.display import display, clear_output
-from vlab4mic.utils.visualisation.matplotlib_plots import slider_normalised
+from .matplotlib_plots import slider_normalised
 import ipywidgets as widgets
 import mpl_toolkits.axes_grid1 as axes_grid1
 import io
 import numpy as np
 from IPython.utils import io
 from .matplotlib_plots import plot_projection
-#from ..utils.visualisation.matplotlib_plots import plot_projection
 
 select_colour = "#4daf4ac7"
 remove_colour = "#ff8000da"

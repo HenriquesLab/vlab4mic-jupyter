@@ -30,13 +30,6 @@ Functions
 - run_experiment_widget(experiment):
     Returns a widget for running the experiment and previewing results.
 
-Typical usage
--------------
-
-    from vlab4mic.jupyter_widgets import experiment_widgets
-    my_experiment = experiments.ExperimentParametrisation()
-    structure_widget = experiment_widgets.select_structure_widget(my_experiment)
-    structure_widget.show()
 
 Each function returns an EZInput-based widget that can be displayed in a Jupyter notebook.
 """

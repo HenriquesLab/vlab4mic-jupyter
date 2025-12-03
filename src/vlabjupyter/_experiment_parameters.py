@@ -40,11 +40,9 @@ import io
 from ipyfilechooser import FileChooser
 import copy
 from .matplotlib_plots import slider_normalised
-#from vlab4mic.utils.visualisation.matplotlib_plots import slider_normalised
 import numpy as np
 import tifffile as tif
 from IPython.utils import io
-#from ..experiments import build_virtual_microscope
 
 select_colour = "#4daf4ac7"
 remove_colour = "#ff8000da"
