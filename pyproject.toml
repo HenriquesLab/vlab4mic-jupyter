@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "vlabjupyter"
 version = "0.0.1"
-description = "My python package"
+description = "Jupyter widgets for VLab4Mic"
 authors = [
     { name = "Damian Martinez", email = "jdmartinezigc@gmail.com" },
     { name = "Bruno Saraiva", email = "bruno.msaraiva2@gmail.com" },
