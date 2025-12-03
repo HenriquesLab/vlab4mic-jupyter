@@ -1054,13 +1054,15 @@ def ui_select_modality(experiment):
         Widget for modality selection and preview.
     """
     modalities_default = ["Widefield", "Confocal", "STED", "SMLM", "All"]
-    imager, preview_experiment = build_virtual_microscope(
-        multimodal=modalities_default
-    )
+    #imager, preview_experiment = build_virtual_microscope(
+    #    multimodal=modalities_default
+    #)
+    #preview_experiment = copy.deepcopy(experiment)
     xy_zoom_in = 0.5
+    experiment.clear_modalities()
     for mod_names in modalities_default[0 : len(modalities_default) - 1]:
-        preview_experiment.add_modality(modality_name=mod_names, save=True)
-    preview_experiment.build(modules=["imager"])
+        experiment.add_modality(modality_name=mod_names, save=True)
+    experiment.build(modules=["imager"])
     modality_gui = EZInput(title="Modality selection")
     modality_gui.add_label("Current modalities list:")
     modality_gui.add_HTML("message", "No modalities selected yet.")
@@ -1115,6 +1117,8 @@ def ui_select_modality(experiment):
         b1.disabled = True
         b2.disabled = True
         modality_gui["select_modalities"].disabled = True
+        modality_gui["modality"].disabled = True
+
 
     def update_plot(change):
         mod_name = modality_gui["modality"].value
@@ -1124,7 +1128,7 @@ def ui_select_modality(experiment):
                 info = experiment.local_modalities_parameters[mod_name]
             else:
                 info = experiment.imaging_modalities[mod_name]
-            psf_stack = preview_experiment.imager.get_modality_psf_stack(
+            psf_stack = experiment.imager.get_modality_psf_stack(
                 mod_name
             )
             psf_shape = psf_stack.shape
