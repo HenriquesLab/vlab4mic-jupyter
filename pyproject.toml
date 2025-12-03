@@ -7,7 +7,10 @@ name = "vlabjupyter"
 version = "0.0.1"
 description = "My python package"
 authors = [
-    { name = "Damian Martinez", email = "damian.martinez@itqb.unl.pt" }
+    { name = "Damian Martinez", email = "jdmartinezigc@gmail.com" },
+    { name = "Bruno Saraiva", email = "bruno.msaraiva2@gmail.com" },
+    { name = "Mario del Rosario", email = "mario.delrosario@itqb.unl.pt" }
+    { name = "Ricardo Henriques", email = "ricardo@henriqueslab.org" },
 ]
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { text = "MIT" }
