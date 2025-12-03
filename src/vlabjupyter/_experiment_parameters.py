@@ -39,7 +39,8 @@ import ipywidgets as widgets
 import io
 from ipyfilechooser import FileChooser
 import copy
-from vlab4mic.utils.visualisation.matplotlib_plots import slider_normalised
+from .matplotlib_plots import slider_normalised
+#from vlab4mic.utils.visualisation.matplotlib_plots import slider_normalised
 import numpy as np
 import tifffile as tif
 from IPython.utils import io
