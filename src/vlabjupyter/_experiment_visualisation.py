@@ -43,6 +43,7 @@ import mpl_toolkits.axes_grid1 as axes_grid1
 import io
 import numpy as np
 from IPython.utils import io
+from .matplotlib_plots import plot_projection
 #from ..utils.visualisation.matplotlib_plots import plot_projection
 
 select_colour = "#4daf4ac7"
