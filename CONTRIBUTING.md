@@ -35,9 +35,9 @@ We favor fast, local feedback before CI:
 ### 1) Fork and clone
 ```bash
 # Fork on GitHub, then:
-git clone https://github.com/YOUR_USERNAME/vlabjupyter.git
+git clone https://github.com/YOUR_USERNAME/vlab4micjupyter.git
 cd vlabjupyter
-git remote add upstream https://github.com/OWNER/vlabjupyter.git
+git remote add upstream https://github.com/OWNER/vlab4micjupyter.git
 ```
 
 ### 2) Set up the development environment

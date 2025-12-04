@@ -3,7 +3,7 @@ requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "vlabjupyter"
+name = "vlab4micjupyter"
 version = "0.0.1"
 description = "Jupyter widgets for VLab4Mic"
 authors = [
@@ -29,7 +29,7 @@ dependencies = [
     "ezinput>=0.0.6",
 ]
 [project.optional-dependencies]
-all = ["vlabjupyter[dev, test]"]
+all = ["vlab4micjupyter[dev, test]"]
 dev = [
     "pre-commit>=3.7.0",
     "ruff>=0.4.3",

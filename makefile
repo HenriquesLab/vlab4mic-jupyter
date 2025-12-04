@@ -31,11 +31,11 @@ format:
 	pre-commit run ruff-format --all-files
 
 pytest:
-	pytest --cov=vlabjupyter --cov-report=term-missing tests
+	pytest --cov=vlab4micjupyter --cov-report=term-missing tests
 
 docs:
 	rm -rf docs
-	pdoc src/vlabjupyter -o docs
+	pdoc src/vlab4micjupyter -o docs
 
 .DEFAULT_GOAL := help
 
