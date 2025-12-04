@@ -49,3 +49,6 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 "*" = ["*.yaml"]
+
+[tool.pytest.ini_options]
+addopts = "--nbmake --cov=vlabjupyter --cov-report=term-missing --cov-report=xml"
