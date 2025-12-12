@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vlab4micjupyter"
-version = "0.0.1"
+version = "0.0.2"
 description = "Jupyter widgets for VLab4Mic"
 authors = [
     { name = "Damian Martinez", email = "jdmartinezigc@gmail.com" },
@@ -21,7 +21,7 @@ classifiers = [
 ]
 requires-python = ">= 3.9"
 dependencies = [
-    "vlab4mic>=0.0.8",
+    "vlab4mic>=0.0.10",
     "jupyterlab>=4.3.4",
     "ipywidgets>=7.7.1",
     "ipykernel>=6.29.5",
