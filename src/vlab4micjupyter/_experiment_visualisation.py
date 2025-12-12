@@ -495,10 +495,12 @@ def ui_set_acq_params(experiment):
     """
     acquisition_gui = EZInput(title="acquisition_params")
     imager_channels = []
+    channels = []
     anymod = list(experiment.imager.modalities.keys())[0]
     for chann in experiment.imager.modalities[anymod]["filters"].keys():
         print(chann)
         imager_channels.append(chann)
+        channels.append(chann)
     nchannels = len(imager_channels)
 
     def set_params(b):
@@ -517,6 +519,7 @@ def ui_set_acq_params(experiment):
             channels = [
                 "ch0",
             ]
+            print(f"using default channel: {channels}")
         experiment.set_modality_acq(
             modality_name=mod_id,
             exp_time=exp_time,
@@ -528,7 +531,7 @@ def ui_set_acq_params(experiment):
         acquisition_gui["current_parameters"].value = _mods_text_update(
             mods_text_base="Current acquisition parameters for modalities: ",
             mod_acq_params=experiment.selected_mods,
-            keys_to_use=["exp_time", "noise", "nframes"],
+            keys_to_use=["exp_time", "noise", "nframes", "channels",],
         )
 
     def preview_mod(b):
@@ -714,7 +717,7 @@ def ui_set_acq_params(experiment):
         _mods_text_update(
             mods_text_base="Current acquisition parameters for modalities: ",
             mod_acq_params=experiment.selected_mods,
-            keys_to_use=["exp_time", "noise", "nframes"],
+            keys_to_use=["exp_time", "noise", "nframes", "channels",],
         ),
     )
     acquisition_gui.add_button(
