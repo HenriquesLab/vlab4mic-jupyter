@@ -289,6 +289,7 @@ def ui_select_probe(experiment, **kwargs):
         probe_target_type = options_dictionary[probes_gui["mock_type"].value]
         probe_target_value = probes_gui["mock_type_options1"].value
         probe_target_value2 = probes_gui["mock_type_options2"].value
+        probe_fluorophore = probes_gui["fluorophore"].value
         as_linker = probes_gui["as_linker"].value
         if probes_gui["wobble"].value:
             probe_wobble_theta = probes_gui["wobble_theta"].value
@@ -333,6 +334,7 @@ def ui_select_probe(experiment, **kwargs):
                 probe_distance_to_epitope=probe_distance_to_epitope,
                 as_primary=as_linker,
                 probe_wobble_theta=probe_wobble_theta,
+                probe_fluorophore=probe_fluorophore,
             )
         elif probe_target_type == "Atom_residue":
             residue = probes_gui["mock_type_options1"].value
@@ -346,6 +348,7 @@ def ui_select_probe(experiment, **kwargs):
                 probe_distance_to_epitope=probe_distance_to_epitope,
                 as_primary=as_linker,
                 probe_wobble_theta=probe_wobble_theta,
+                probe_fluorophore=probe_fluorophore,
             )
         elif probe_target_type == "Primary":
             experiment.add_probe(
@@ -357,6 +360,7 @@ def ui_select_probe(experiment, **kwargs):
                 probe_distance_to_epitope=probe_distance_to_epitope,
                 as_primary=as_linker,
                 probe_wobble_theta=probe_wobble_theta,
+                probe_fluorophore=probe_fluorophore,
             )
         probes_gui["create_particle"].disabled = False
         update_probe_list()
@@ -557,7 +561,11 @@ def ui_select_probe(experiment, **kwargs):
         step=1,
         description="Wobble cone range (degrees)",
     )
-
+    probes_gui.add_dropdown(
+        "fluorophore",
+        options=["AF647", "AF488"],
+        description="Fluorophore",
+    )
     # Defect parameters section
     probes_gui.add_HTML(
         "defects_section_header",
@@ -636,6 +644,9 @@ def ui_select_probe(experiment, **kwargs):
         ]
         probe_widgets_visibility["wobble_theta"] = (
             not probe_widgets_visibility["wobble_theta"]
+        )
+        probe_widgets_visibility["fluorophore"] = (
+            not probe_widgets_visibility["fluorophore"]
         )
         # Defect parameters visibility
         probe_widgets_visibility["defects_section_header"] = (
