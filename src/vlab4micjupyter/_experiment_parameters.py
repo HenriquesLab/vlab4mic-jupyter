@@ -292,6 +292,16 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         probe_target_value = probes_gui["mock_type_options1"].value
         probe_target_value2 = probes_gui["mock_type_options2"].value
         probe_fluorophore = probes_gui["fluorophore"].value
+        if probe_fluorophore == "<Create new fluorophore>":
+            experiment.set_fluorophore_parameters(
+                
+            )
+            fluorophore_parameters = dict()
+            probe_fluorophore = probes_gui["fluorophore_name"].value
+            fluorophore_parameters["photon_yield"] = probes_gui["photon_yield"].value
+        else:
+            probe_fluorophore = probe_fluorophore
+            fluorophore_parameters = None
         as_linker = probes_gui["as_linker"].value
         if probes_gui["wobble"].value:
             probe_wobble_theta = probes_gui["wobble_theta"].value
@@ -337,6 +347,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
                 as_primary=as_linker,
                 probe_wobble_theta=probe_wobble_theta,
                 probe_fluorophore=probe_fluorophore,
+                fluorophore_parameters=fluorophore_parameters,
             )
         elif probe_target_type == "Atom_residue":
             residue = probes_gui["mock_type_options1"].value
@@ -351,6 +362,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
                 as_primary=as_linker,
                 probe_wobble_theta=probe_wobble_theta,
                 probe_fluorophore=probe_fluorophore,
+                fluorophore_parameters=fluorophore_parameters,
             )
         elif probe_target_type == "Primary":
             experiment.add_probe(
@@ -363,14 +375,15 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
                 as_primary=as_linker,
                 probe_wobble_theta=probe_wobble_theta,
                 probe_fluorophore=probe_fluorophore,
+                fluorophore_parameters=fluorophore_parameters,
             )
         probes_gui["create_particle"].disabled = False
         update_probe_list()
 
     def update_probe_list():
         probes_gui["message1"].value = ""
-        for probe in experiment.probe_parameters.keys():
-            probes_gui["message1"].value += probe + "<br>"
+        for probe, probe_params in experiment.probe_parameters.items():
+            probes_gui["message1"].value += probe + " (fluorophore: " + probe_params["fluorophore_id"] + ")" + "<br>"
 
     def create_particle(b):
         probes_gui["message2"].value = "Creating labelled structure..."
@@ -463,7 +476,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
     # advanced parameters
     probes_gui.add_HTML(
         "advanced_param_header",
-        "<hr> <b>Advanced parameters</b>",
+        "<b>Advanced parameters</b> <hr> ",
         style=dict(font_size="15px"),
     )
     probes_gui.add_text(
