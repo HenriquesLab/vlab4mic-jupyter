@@ -305,9 +305,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
                     local_file = config_fluorophore_dir / f"{probe_fluorophore}.yaml"
                 with open(local_file, "w") as file:
                     yaml.safe_dump(fluorophore_parameters, file)
-                experiment.test = str(local_file)
         else:
-            probe_fluorophore = probe_fluorophore
             fluorophore_parameters = None
         as_linker = probes_gui["as_linker"].value
         if probes_gui["wobble"].value:
