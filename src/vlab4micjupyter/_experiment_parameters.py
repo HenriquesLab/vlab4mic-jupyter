@@ -44,6 +44,8 @@ import numpy as np
 import tifffile as tif
 from IPython.utils import io
 from pathlib import Path
+import yaml
+import os
 
 select_colour = "#4daf4ac7"
 remove_colour = "#ff8000da"
@@ -58,7 +60,7 @@ update_icon = "fa-wrench"  # create
 toggle_icon = "fa-eye-slash"
 upload_icon = "fa-upload"
 
-local_configuration_dir = Path.home() / ".vlab4micjupyter"
+local_configuration_dir = Path.home() / "vlab4micjupyter"
 
 def ui_select_structure(experiment):
     """
@@ -292,13 +294,18 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         probe_target_value = probes_gui["mock_type_options1"].value
         probe_target_value2 = probes_gui["mock_type_options2"].value
         probe_fluorophore = probes_gui["fluorophore"].value
+        save_new_fluorophore = probes_gui["create_fluorophore"].value
         if probe_fluorophore == "<Create new fluorophore>":
-            experiment.set_fluorophore_parameters(
-                
-            )
-            fluorophore_parameters = dict()
+            fluorophore_parameters = copy.deepcopy(experiment.fluorophore_parameters_template)
             probe_fluorophore = probes_gui["fluorophore_name"].value
             fluorophore_parameters["photon_yield"] = probes_gui["photon_yield"].value
+            if save_new_fluorophore:
+                config_fluorophore_dir = local_configuration_dir / "fluorophores"
+                if config_fluorophore_dir.exists():
+                    local_file = config_fluorophore_dir / f"{probe_fluorophore}.yaml"
+                with open(local_file, "w") as file:
+                    yaml.safe_dump(fluorophore_parameters, file)
+                experiment.test = str(local_file)
         else:
             probe_fluorophore = probe_fluorophore
             fluorophore_parameters = None

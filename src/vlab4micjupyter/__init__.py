@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 # create local configuration directory
-local_config_path = Path.home() / ".vlab4mic_jupyter"
+local_config_path = Path.home() / "vlab4micjupyter"
 if not os.path.exists(local_config_path):
     os.makedirs(local_config_path)
 
