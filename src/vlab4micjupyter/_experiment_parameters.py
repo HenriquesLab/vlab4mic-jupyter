@@ -563,8 +563,15 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         step=1,
         description="Wobble cone range (degrees)",
     )
+    ## Fluorophore section
     # check for local configuration files for fluorophores
-    fluorophore_options = ["AF647", "AF488"]
+    fluorophore_options = []
+    experiment_directory = Path(experiment.config_directories["fluorophores"])
+    for file in experiment_directory.iterdir():
+        if file.suffix == ".yaml":
+            fluorophore_name = file.stem
+            if fluorophore_name != "_template_":
+                fluorophore_options.append(fluorophore_name)
     config_fluorophore_dir = local_configuration_dir / "fluorophores"
     if config_fluorophore_dir.exists():
         for file in config_fluorophore_dir.iterdir():
