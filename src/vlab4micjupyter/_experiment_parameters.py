@@ -284,7 +284,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         update_probe_list()
 
     def select_custom_probe(b):
-        probe_template = probes_gui["select_probe_template"].value
+        probe_template = "NHS_ester"
         probe_name = probes_gui["probe_name"].value
         labelling_efficiency = probes_gui["labelling_efficiency"].value
         probe_distance_to_epitope = probes_gui["distance_from_epitope"].value
