@@ -43,6 +43,7 @@ from .matplotlib_plots import slider_normalised
 import numpy as np
 import tifffile as tif
 from IPython.utils import io
+from pathlib import Path
 
 select_colour = "#4daf4ac7"
 remove_colour = "#ff8000da"
@@ -57,6 +58,7 @@ update_icon = "fa-wrench"  # create
 toggle_icon = "fa-eye-slash"
 upload_icon = "fa-upload"
 
+local_configuration_dir = Path.home() / ".vlab4micjupyter"
 
 def ui_select_structure(experiment):
     """
@@ -223,7 +225,7 @@ def _unstyle_widgets(ezwidget, visibility_dictionary):
             )
 
 
-def ui_select_probe(experiment, **kwargs):
+def ui_select_probe(experiment, local_configuration_dir = local_configuration_dir, **kwargs):
     """
     Create a widget for selecting and adding probes to the experiment.
 
@@ -561,6 +563,15 @@ def ui_select_probe(experiment, **kwargs):
         step=1,
         description="Wobble cone range (degrees)",
     )
+    # check for local configuration files for fluorophores
+    fluorophore_options = ["AF647", "AF488"]
+    config_fluorophore_dir = local_configuration_dir / "fluorophores"
+    if config_fluorophore_dir.exists():
+        for file in config_fluorophore_dir.iterdir():
+            if file.suffix == ".yaml":
+                fluorophore_name = file.stem
+                if fluorophore_name not in fluorophore_options:
+                    fluorophore_options.append(fluorophore_name)
     probes_gui.add_dropdown(
         "fluorophore",
         options=["AF647", "AF488"],
