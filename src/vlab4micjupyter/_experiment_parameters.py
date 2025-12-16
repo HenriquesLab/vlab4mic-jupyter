@@ -298,7 +298,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         if probe_fluorophore == "<Create new fluorophore>":
             fluorophore_parameters = copy.deepcopy(experiment.fluorophore_parameters_template)
             probe_fluorophore = probes_gui["fluorophore_name"].value
-            fluorophore_parameters["photon_yield"] = probes_gui["photon_yield"].value
+            fluorophore_parameters["emission"]["photon_yield"] = probes_gui["photon_yield"].value
             if save_new_fluorophore:
                 config_fluorophore_dir = local_configuration_dir / "fluorophores"
                 if config_fluorophore_dir.exists():
@@ -606,7 +606,10 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
             if file.suffix == ".yaml":
                 fluorophore_name = file.stem
                 if fluorophore_name not in fluorophore_options:
+                    with open(file, "r") as f:
+                        local_fluo_pars = yaml.safe_load(f)
                     fluorophore_options.append(fluorophore_name)
+                    experiment.fluorophore_parameters[fluorophore_name] = local_fluo_pars
     probes_gui.add_dropdown(
         "fluorophore",
         options=fluorophore_options,

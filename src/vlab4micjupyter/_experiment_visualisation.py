@@ -767,6 +767,7 @@ def ui_set_acq_params(experiment):
     acq_widgets["Clear"] = True
     acq_widgets["show_preview"] = True
     acq_widgets["show_as_volume"] = True
+    acq_widgets["Channels"] = False
 
     update_widgets_visibility(acquisition_gui, acq_widgets)
     return acquisition_gui
