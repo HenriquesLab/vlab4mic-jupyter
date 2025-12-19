@@ -760,7 +760,8 @@ def analyse_sweep(sweep_gen):
         text += "Probe Parameters: " + str(parameters[2])+ "<br>"
         text += "Defect Parameters: " + str(parameters[3])+ "<br>"
         text += "Virtual Sample Parameters: " + str(parameters[4])+ "<br>"
-        text += "Acquisition Parameters: " + str(parameters[6])+ "<br>"
+        text += "Modality Parameters: " + str(parameters[6])+ "<br>"
+        text += "Acquisition Parameters: " + str(parameters[7])+ "<br>"
         analysis_widget["params_preview"].value = text
 
     def toggle_preview(b):

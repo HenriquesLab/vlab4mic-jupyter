@@ -502,6 +502,7 @@ def ui_set_acq_params(experiment):
         imager_channels.append(chann)
         channels.append(chann)
     nchannels = len(imager_channels)
+    experiment.reset_to_defaults(module="acquisitions", channels=imager_channels)
 
     def set_params(b):
         mod_id = acquisition_gui["modalities_dropdown"].value
@@ -651,7 +652,7 @@ def ui_set_acq_params(experiment):
     def clear(b):
         print("Acquisition parameters cleared")
         with io.capture_output() as captured:
-            experiment.reset_to_defaults(module="acquisitions", save=True)
+            experiment.reset_to_defaults(module="acquisitions", channels=imager_channels)
         acquisition_gui["current_parameters"].value = _mods_text_update(
             mods_text_base="Current acquisition parameters for modalities: ",
             mod_acq_params=experiment.selected_mods,
@@ -766,6 +767,7 @@ def ui_set_acq_params(experiment):
     acq_widgets["Clear"] = True
     acq_widgets["show_preview"] = True
     acq_widgets["show_as_volume"] = True
+    acq_widgets["Channels"] = False
 
     update_widgets_visibility(acquisition_gui, acq_widgets)
     return acquisition_gui

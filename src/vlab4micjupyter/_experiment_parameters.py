@@ -43,6 +43,9 @@ from .matplotlib_plots import slider_normalised
 import numpy as np
 import tifffile as tif
 from IPython.utils import io
+from pathlib import Path
+import yaml
+import os
 
 select_colour = "#4daf4ac7"
 remove_colour = "#ff8000da"
@@ -57,6 +60,7 @@ update_icon = "fa-wrench"  # create
 toggle_icon = "fa-eye-slash"
 upload_icon = "fa-upload"
 
+local_configuration_dir = Path.home() / "vlab4micjupyter"
 
 def ui_select_structure(experiment):
     """
@@ -223,7 +227,7 @@ def _unstyle_widgets(ezwidget, visibility_dictionary):
             )
 
 
-def ui_select_probe(experiment, **kwargs):
+def ui_select_probe(experiment, local_configuration_dir = local_configuration_dir, **kwargs):
     """
     Create a widget for selecting and adding probes to the experiment.
 
@@ -282,7 +286,7 @@ def ui_select_probe(experiment, **kwargs):
         update_probe_list()
 
     def select_custom_probe(b):
-        probe_template = probes_gui["select_probe_template"].value
+        probe_template = "NHS_ester"
         probe_name = probes_gui["probe_name"].value
         labelling_efficiency = probes_gui["labelling_efficiency"].value
         probe_distance_to_epitope = probes_gui["distance_from_epitope"].value
@@ -290,6 +294,19 @@ def ui_select_probe(experiment, **kwargs):
         probe_target_value = probes_gui["mock_type_options1"].value
         probe_target_value2 = probes_gui["mock_type_options2"].value
         probe_fluorophore = probes_gui["fluorophore"].value
+        save_new_fluorophore = probes_gui["create_fluorophore"].value
+        if probe_fluorophore == "<Create new fluorophore>":
+            fluorophore_parameters = copy.deepcopy(experiment.fluorophore_parameters_template)
+            probe_fluorophore = probes_gui["fluorophore_name"].value
+            fluorophore_parameters["emission"]["photon_yield"] = probes_gui["photon_yield"].value
+            if save_new_fluorophore:
+                config_fluorophore_dir = local_configuration_dir / "fluorophores"
+                if config_fluorophore_dir.exists():
+                    local_file = config_fluorophore_dir / f"{probe_fluorophore}.yaml"
+                with open(local_file, "w") as file:
+                    yaml.safe_dump(fluorophore_parameters, file)
+        else:
+            fluorophore_parameters = None
         as_linker = probes_gui["as_linker"].value
         if probes_gui["wobble"].value:
             probe_wobble_theta = probes_gui["wobble_theta"].value
@@ -335,6 +352,7 @@ def ui_select_probe(experiment, **kwargs):
                 as_primary=as_linker,
                 probe_wobble_theta=probe_wobble_theta,
                 probe_fluorophore=probe_fluorophore,
+                fluorophore_parameters=fluorophore_parameters,
             )
         elif probe_target_type == "Atom_residue":
             residue = probes_gui["mock_type_options1"].value
@@ -349,6 +367,7 @@ def ui_select_probe(experiment, **kwargs):
                 as_primary=as_linker,
                 probe_wobble_theta=probe_wobble_theta,
                 probe_fluorophore=probe_fluorophore,
+                fluorophore_parameters=fluorophore_parameters,
             )
         elif probe_target_type == "Primary":
             experiment.add_probe(
@@ -361,14 +380,15 @@ def ui_select_probe(experiment, **kwargs):
                 as_primary=as_linker,
                 probe_wobble_theta=probe_wobble_theta,
                 probe_fluorophore=probe_fluorophore,
+                fluorophore_parameters=fluorophore_parameters,
             )
         probes_gui["create_particle"].disabled = False
         update_probe_list()
 
     def update_probe_list():
         probes_gui["message1"].value = ""
-        for probe in experiment.probe_parameters.keys():
-            probes_gui["message1"].value += probe + "<br>"
+        for probe, probe_params in experiment.probe_parameters.items():
+            probes_gui["message1"].value += probe + " (fluorophore: " + probe_params["fluorophore_id"] + ")" + "<br>"
 
     def create_particle(b):
         probes_gui["message2"].value = "Creating labelled structure..."
@@ -387,7 +407,7 @@ def ui_select_probe(experiment, **kwargs):
 
     def show_probe_info(change):
         probe_template = probes_gui["select_probe_template"].value
-        probes_gui["probe_name"].value = probe_template
+        #probes_gui["probe_name"].value = probe_template
         if probe_template in experiment.config_probe_params.keys():
             info_text = "<b>Target: </b>"
             probe_info = experiment.config_probe_params[probe_template]
@@ -461,12 +481,12 @@ def ui_select_probe(experiment, **kwargs):
     # advanced parameters
     probes_gui.add_HTML(
         "advanced_param_header",
-        "<b>Advanced parameters</b>",
+        "<b>Advanced parameters</b> <hr> ",
         style=dict(font_size="15px"),
     )
     probes_gui.add_text(
         tag="probe_name",
-        value=probes_gui["select_probe_template"].value,
+        value="Custom_Probe",
         description="Probe name",
     )
     probes_gui.add_float_slider(
@@ -488,6 +508,11 @@ def ui_select_probe(experiment, **kwargs):
         style={"description_width": "initial"},
     )
     # change target type and value
+    probes_gui.add_HTML(
+        "target_selection_header",
+        "<hr> <b>Probe Target Selection</b>",
+        style=dict(font_size="14px", color="darkblue"),
+    )
     options_dictionary = dict(
         Protein="Sequence", Residue="Atom_residue", Primary_Probe="Primary"
     )
@@ -561,15 +586,63 @@ def ui_select_probe(experiment, **kwargs):
         step=1,
         description="Wobble cone range (degrees)",
     )
+    ## Fluorophore section
+    # check for local configuration files for fluorophores
+    probes_gui.add_HTML(
+        "fluorophore_section_header",
+        "<hr> <b>Fluorophore Parameters</b>",
+        style=dict(font_size="14px", color="darkblue"),
+    )
+    fluorophore_options = ["<Create new fluorophore>", ]
+    experiment_directory = Path(experiment.config_directories["fluorophores"])
+    for file in experiment_directory.iterdir():
+        if file.suffix == ".yaml":
+            fluorophore_name = file.stem
+            if fluorophore_name != "_template_":
+                fluorophore_options.append(fluorophore_name) 
+    config_fluorophore_dir = local_configuration_dir / "fluorophores"
+    if config_fluorophore_dir.exists():
+        for file in config_fluorophore_dir.iterdir():
+            if file.suffix == ".yaml":
+                fluorophore_name = file.stem
+                if fluorophore_name not in fluorophore_options:
+                    with open(file, "r") as f:
+                        local_fluo_pars = yaml.safe_load(f)
+                    fluorophore_options.append(fluorophore_name)
+                    experiment.fluorophore_parameters[fluorophore_name] = local_fluo_pars
     probes_gui.add_dropdown(
         "fluorophore",
-        options=["AF647", "AF488"],
-        description="Fluorophore",
+        options=fluorophore_options,
+        description="Conjugated fluorophore: ",
+    )
+    probes_gui.add_int_slider(
+        tag="photon_yield",
+        description="Photon yield (photons per second)",
+        min=1000,
+        max=100000,
+        value=10000,
+        step=1,
+        continuous_update=False,
+    )
+    probes_gui.add_text(
+        tag="fluorophore_name",
+        description="Fluorophore name:",
+        value="My_Fluorophore",
+    )
+    probes_gui.add_HTML(
+        "fluorophore_creation_info",
+        "<b>Note: Different fluorophores will be imaged in different channels by default.</b>",
+        style=dict(font_size="12px", color="gray"),
+    )
+    probes_gui.add_checkbox(
+        "create_fluorophore",
+        description="Save new fluorophore in local configuration",
+        value=False,
     )
     # Defect parameters section
     probes_gui.add_HTML(
         "defects_section_header",
-        "<b>Structural Defect Parameters</b>",
+        "<hr> <b>Structural Defect Parameters</b>",
         style=dict(font_size="14px", color="darkblue"),
     )
     probes_gui.add_HTML(
@@ -624,6 +697,10 @@ def ui_select_probe(experiment, **kwargs):
         probe_widgets_visibility["distance_from_epitope"] = (
             not probe_widgets_visibility["distance_from_epitope"]
         )
+        # Target selection visibility
+        probe_widgets_visibility["target_selection_header"] = (
+            not probe_widgets_visibility["target_selection_header"]
+        )
         probe_widgets_visibility["mock_type"] = not probe_widgets_visibility[
             "mock_type"
         ]
@@ -645,8 +722,24 @@ def ui_select_probe(experiment, **kwargs):
         probe_widgets_visibility["wobble_theta"] = (
             not probe_widgets_visibility["wobble_theta"]
         )
+        # Fluorophore parameters visibility
+        probe_widgets_visibility["fluorophore_section_header"] = (
+            not probe_widgets_visibility["fluorophore_section_header"]
+        )
         probe_widgets_visibility["fluorophore"] = (
             not probe_widgets_visibility["fluorophore"]
+        )
+        probe_widgets_visibility["photon_yield"] = (
+            not probe_widgets_visibility["photon_yield"]
+        )
+        probe_widgets_visibility["fluorophore_name"] = (
+            not probe_widgets_visibility["fluorophore_name"]
+        )
+        probe_widgets_visibility["fluorophore_creation_info"] = (
+            not probe_widgets_visibility["fluorophore_creation_info"]
+        )
+        probe_widgets_visibility["create_fluorophore"] = (
+            not probe_widgets_visibility["create_fluorophore"]
         )
         # Defect parameters visibility
         probe_widgets_visibility["defects_section_header"] = (
