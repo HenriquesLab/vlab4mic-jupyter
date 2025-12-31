@@ -293,7 +293,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         probe_target_type = options_dictionary[probes_gui["mock_type"].value]
         probe_target_value = probes_gui["mock_type_options1"].value
         probe_target_value2 = probes_gui["mock_type_options2"].value
-        probe_target_options = probes_gui["text_options"].value 
+        probe_target_extra_option= probes_gui["text_options"].value 
         probe_fluorophore = probes_gui["fluorophore"].value
         save_new_fluorophore = probes_gui["create_fluorophore"].value
         if probe_fluorophore == "<Create new fluorophore>":
@@ -340,14 +340,21 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
                 probe_name,
             ]
         if probe_target_type == "Sequence":
+            if probe_target_value == "N/A":
+                peptide_motif=None
+                probe_target_value = probe_target_extra_option
+            else:
+                peptide_motif={
+                    "chain_name": probe_target_value,
+                    "position": probe_target_value2,
+                }
+                probe_target_value = None
             experiment.add_probe(
                 probe_template=probe_template,
                 probe_name=probe_name,
                 probe_target_type=probe_target_type,
-                peptide_motif={
-                    "chain_name": probe_target_value,
-                    "position": probe_target_value2,
-                },
+                probe_target_value= probe_target_value,
+                peptide_motif = peptide_motif,
                 labelling_efficiency=labelling_efficiency,
                 probe_distance_to_epitope=probe_distance_to_epitope,
                 as_primary=as_linker,
@@ -356,13 +363,26 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
                 fluorophore_parameters=fluorophore_parameters,
             )
         elif probe_target_type == "Atom_residue":
-            residue = probes_gui["mock_type_options1"].value
-            atom = probes_gui["mock_type_options2"].value
+            residue = [probe_target_value,]
+            if probe_target_value2 == "All":
+                chains = None
+            else:
+                chains = list(probe_target_value2)
+            if probe_target_extra_option == '':
+                position = None
+            else:
+                position = int(probe_target_extra_option)
+            atom = ["CA",]
+            probe_target_value_dictionary = dict(
+                atoms=atom, 
+                residues=residue,
+                position=position,
+                chains=chains)
             experiment.add_probe(
                 probe_template=probe_template,
                 probe_name=probe_name,
                 probe_target_type=probe_target_type,
-                probe_target_value=dict(atoms=atom, residues=residue),
+                probe_target_value=probe_target_value_dictionary,
                 labelling_efficiency=labelling_efficiency,
                 probe_distance_to_epitope=probe_distance_to_epitope,
                 as_primary=as_linker,
@@ -561,17 +581,21 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         Primary_Probe=[
             None,
         ],
-        Sequence=None,
-        SiteSpecific=None,
+        Sequence=["N/A",],
+        SiteSpecific=list_of_residues,
     )
+    chain_options = ["All",]
+    for i in copy.copy(list(experiment.structure.chains_dict.keys())):
+        chain_options.append(i)
+    # experiment.structure.CIFdictionary["_chem_comp.id"]
     options_per_type2 = dict(
         Protein=["cterminal", "nterminal"],
-        Residue=["CA"],
+        Residue=chain_options,
         Primary_Probe=[
             None,
         ],
-        Sequence=None,
-        SiteSpecific=None
+        Sequence=["N/A",],
+        SiteSpecific=chain_options
     )
     probes_gui.add_dropdown(
         "mock_type_options1",
@@ -585,7 +609,8 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
     )
     probes_gui.add_text(
         "text_options",
-        value=None
+        value=None,
+        description="Custom parameter"
     )
     probes_gui.add_HTML(
         "as_linker_info",
