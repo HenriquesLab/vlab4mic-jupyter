@@ -293,6 +293,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         probe_target_type = options_dictionary[probes_gui["mock_type"].value]
         probe_target_value = probes_gui["mock_type_options1"].value
         probe_target_value2 = probes_gui["mock_type_options2"].value
+        probe_target_options = probes_gui["text_options"].value 
         probe_fluorophore = probes_gui["fluorophore"].value
         save_new_fluorophore = probes_gui["create_fluorophore"].value
         if probe_fluorophore == "<Create new fluorophore>":
@@ -436,15 +437,21 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         probes_gui["mock_type_options1"].options = options_per_type1[
             change.new
         ]
-        probes_gui["mock_type_options1"].value = options_per_type1[change.new][
-            0
-        ]
+        if options_per_type1[change.new] is not None:
+            probes_gui["mock_type_options1"].value = options_per_type1[change.new][
+                0
+            ]
+        else:
+            probes_gui["mock_type_options1"].value = None
         probes_gui["mock_type_options2"].options = options_per_type2[
             change.new
         ]
-        probes_gui["mock_type_options2"].value = options_per_type2[change.new][
-            0
-        ]
+        if options_per_type2[change.new] is not None:
+            probes_gui["mock_type_options2"].value = options_per_type2[change.new][
+                0
+            ]
+        else:
+            probes_gui["mock_type_options2"].value = None
 
     def clear_probes(b):
         experiment.remove_probes()
@@ -514,7 +521,11 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         style=dict(font_size="14px", color="darkblue"),
     )
     options_dictionary = dict(
-        Protein="Sequence", Residue="Atom_residue", Primary_Probe="Primary"
+        Protein="Sequence",
+        Residue="Atom_residue",
+        Primary_Probe="Primary",
+        Sequence="Sequence",
+        SiteSpecific="Atom_residue"
     )
     probes_gui.add_dropdown(
         "mock_type",
@@ -550,6 +561,8 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         Primary_Probe=[
             None,
         ],
+        Sequence=None,
+        SiteSpecific=None,
     )
     options_per_type2 = dict(
         Protein=["cterminal", "nterminal"],
@@ -557,6 +570,8 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         Primary_Probe=[
             None,
         ],
+        Sequence=None,
+        SiteSpecific=None
     )
     probes_gui.add_dropdown(
         "mock_type_options1",
@@ -567,6 +582,10 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         "mock_type_options2",
         options=options_per_type2[probes_gui["mock_type"].value],
         description="Where: ",
+    )
+    probes_gui.add_text(
+        "text_options",
+        value=None
     )
     probes_gui.add_HTML(
         "as_linker_info",
@@ -709,6 +728,9 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         )
         probe_widgets_visibility["mock_type_options2"] = (
             not probe_widgets_visibility["mock_type_options2"]
+        )
+        probe_widgets_visibility["text_options"] = (
+            not probe_widgets_visibility["text_options"]
         )
         probe_widgets_visibility["as_linker_info"] = (
             not probe_widgets_visibility["as_linker_info"]
