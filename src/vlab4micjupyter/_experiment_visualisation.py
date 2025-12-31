@@ -565,11 +565,11 @@ def ui_set_acq_params(experiment):
                                 modality=Modality, **single_mod_acq_params
                             )
                         )
-                        min_val = np.min(timeseries[0])
-                        max_val = np.max(timeseries[0])
+                        min_val = np.min(timeseries[single_channel][0])
+                        max_val = np.max(timeseries[single_channel][0])
 
                     preview_image = grid[i].imshow(
-                        timeseries[0],
+                        timeseries[single_channel][0],
                         cmap="gray",
                         interpolation="none",
                         vmin=min_val,
