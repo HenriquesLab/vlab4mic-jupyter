@@ -903,6 +903,16 @@ def ui_select_sample_parameters(experiment):
         icon=toggle_icon,
     )
     ####  advanced parameters ####
+    sample_gui.add_int_text(
+        tag="sample_dimensionsXY",
+        description = "Sample dimensions (XY, in nm)",
+        value="1000",
+    )
+    sample_gui.add_int_text(
+        tag="sample_dimensionsZ",
+        description = "Sample dimensions (Z, in nm)",
+        value="100",
+    )
     sample_gui.add_checkbox(
         "use_min_from_particle",
         value=True,
@@ -1032,6 +1042,10 @@ def ui_select_sample_parameters(experiment):
     def update_parameters(b):
         random_rotations = sample_gui["random_rotations"].value
         random_orientations = sample_gui["random_orientations"].value
+        sample_dimensions= [
+            sample_gui["sample_dimensionsXY"].value,
+            sample_gui["sample_dimensionsXY"].value,
+            sample_gui["sample_dimensionsZ"].value]
         rotation_angles = None
         xy_orientations = None
         xz_orientations = None
@@ -1077,7 +1091,8 @@ def ui_select_sample_parameters(experiment):
             xy_orientations=xy_orientations,
             xz_orientations=xz_orientations,
             yz_orientations=yz_orientations,
-            axial_offset=axial_offset
+            axial_offset=axial_offset,
+            sample_dimensions=sample_dimensions
         )
         update_message()
 
@@ -1123,6 +1138,12 @@ def ui_select_sample_parameters(experiment):
             update_message()
 
     def toggle_advanced_parameters(b):
+        widgets_visibility["sample_dimensionsXY"] = not widgets_visibility[
+            "sample_dimensionsXY"
+        ]
+        widgets_visibility["sample_dimensionsZ"] = not widgets_visibility[
+            "sample_dimensionsZ"
+        ]
         widgets_visibility["minimal_distance_nm"] = not widgets_visibility[
             "minimal_distance_nm"
         ]
