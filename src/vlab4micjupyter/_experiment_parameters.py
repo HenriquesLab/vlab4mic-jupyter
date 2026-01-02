@@ -962,6 +962,11 @@ def ui_select_sample_parameters(experiment):
         description="Randomise positions (enforced when there is more than one particle)",
         style={"description_width": "initial"},
     )
+    sample_gui.add_float_text(
+        tag="expansion_factor",
+        description = "Expansion Factor",
+        value = 1,
+    )
     sample_gui.add_button(
         "update_sample_parameters",
         description="Update sample parameters",
@@ -1097,10 +1102,12 @@ def ui_select_sample_parameters(experiment):
         update_message()
 
     def select_virtual_sample_parameters(b):
+        expansion_factor = sample_gui["expansion_factor"].value
         with io.capture_output() as captured:
             experiment.build(modules=["coordinate_field"])
-            if experiment.objects_created["imager"]:
-                experiment.build(modules=["imager"])
+            if expansion_factor > 1:
+                experiment.coordinate_field.expand_isotropically(factor=expansion_factor)
+            experiment.build(modules=["imager"])
             update_message()
 
     def upload_and_set(b):
@@ -1168,7 +1175,9 @@ def ui_select_sample_parameters(experiment):
         widgets_visibility["axial_offset"] = not widgets_visibility[
             "axial_offset"
         ]
-
+        widgets_visibility["expansion_factor"] = not widgets_visibility[
+            "expansion_factor"
+        ]
         widgets_visibility["fileupload_header"] = (
             not widgets_visibility["fileupload_header"]
         )
