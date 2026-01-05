@@ -1233,14 +1233,14 @@ def ui_select_modality(experiment):
     EZInput
         Widget for modality selection and preview.
     """
-    modalities_default = ["Widefield", "Confocal", "STED", "SMLM", "All"]
+    modalities_default = copy.copy(experiment.example_modalities)
     #imager, preview_experiment = build_virtual_microscope(
     #    multimodal=modalities_default
     #)
     #preview_experiment = copy.deepcopy(experiment)
     xy_zoom_in = 0.5
     experiment.clear_modalities()
-    for mod_names in modalities_default[0 : len(modalities_default) - 1]:
+    for mod_names in modalities_default:
         experiment.add_modality(modality_name=mod_names, save=True)
     experiment.build(modules=["imager"])
     modality_gui = EZInput(title="Modality selection")
