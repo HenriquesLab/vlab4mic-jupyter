@@ -810,7 +810,7 @@ def analyse_sweep(sweep_gen):
         min=0,
         max=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
     )
     analysis_widget.add_int_slider(
         "probe_template",
@@ -818,7 +818,7 @@ def analyse_sweep(sweep_gen):
         min=0,
         max=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
     )
     analysis_widget.add_int_slider(
         "probe_parameters",
@@ -826,7 +826,7 @@ def analyse_sweep(sweep_gen):
         min=0,
         max=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
     )
     analysis_widget.add_int_slider(
         "defect_parameters",
@@ -834,7 +834,7 @@ def analyse_sweep(sweep_gen):
         min=0,
         max=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
     )
     analysis_widget.add_int_slider(
         "vsample_parameters",
@@ -842,7 +842,7 @@ def analyse_sweep(sweep_gen):
         min=0,
         max=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
     )
     analysis_widget.add_int_slider(
         "acquisition_parameters",
@@ -850,7 +850,7 @@ def analyse_sweep(sweep_gen):
         min=0,
         max=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
     )
     analysis_widget.add_int_slider(
         "replica_number",
@@ -858,7 +858,7 @@ def analyse_sweep(sweep_gen):
         min=0,
         max=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
     )
     # connect the preview widgets to the update function
     analysis_widget["modality_template"].observe(update_plot, names="value")

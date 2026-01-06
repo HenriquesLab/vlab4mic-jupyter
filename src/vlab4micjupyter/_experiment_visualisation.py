@@ -161,7 +161,7 @@ def ui_show_structure(experiment):
         step=1,
         value=1000,
         on_change=update_plot,
-        continuous_update=False,
+        # continuous_update=False,
         disabled=True,
     )
     gui.add_int_slider(
@@ -172,7 +172,7 @@ def ui_show_structure(experiment):
         step=1,
         value=0,
         on_change=update_plot,
-        continuous_update=False,
+        # continuous_update=False,
     )
     gui.add_int_slider(
         "vview",
@@ -182,7 +182,7 @@ def ui_show_structure(experiment):
         step=1,
         value=0,
         on_change=update_plot,
-        continuous_update=False,
+        # continuous_update=False,
     )
 
     def enable_view_widgets(b):
@@ -269,7 +269,7 @@ def ui_show_labelled_structure(experiment):
         max=30,
         step=1,
         value=1,
-        continuous_update=False,
+        # continuous_update=False,
         on_change=show_labelled_structure,
         disabled=True,
     )
@@ -280,7 +280,7 @@ def ui_show_labelled_structure(experiment):
         max=30,
         step=1,
         value=1,
-        continuous_update=False,
+        # continuous_update=False,
         on_change=show_labelled_structure,
         disabled=True,
     )
@@ -291,7 +291,7 @@ def ui_show_labelled_structure(experiment):
         max=90,
         step=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
         on_change=show_labelled_structure,
         disabled=True,
     )
@@ -302,7 +302,7 @@ def ui_show_labelled_structure(experiment):
         max=90,
         step=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
         on_change=show_labelled_structure,
         disabled=True,
     )
@@ -377,7 +377,7 @@ def ui_show_virtual_sample(experiment):
         max=90,
         step=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
         on_change=update_plot,
         disabled=True,
     )
@@ -388,7 +388,7 @@ def ui_show_virtual_sample(experiment):
         max=90,
         step=1,
         value=90,
-        continuous_update=False,
+        # continuous_update=False,
         on_change=update_plot,
         disabled=True,
     )
