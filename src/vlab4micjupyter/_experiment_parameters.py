@@ -293,6 +293,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         probe_target_type = options_dictionary[probes_gui["mock_type"].value]
         probe_target_value = probes_gui["mock_type_options1"].value
         probe_target_value2 = probes_gui["mock_type_options2"].value
+        probe_target_extra_option= probes_gui["text_options"].value 
         probe_fluorophore = probes_gui["fluorophore"].value
         save_new_fluorophore = probes_gui["create_fluorophore"].value
         if probe_fluorophore == "<Create new fluorophore>":
@@ -339,14 +340,21 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
                 probe_name,
             ]
         if probe_target_type == "Sequence":
+            if probe_target_value == "N/A":
+                peptide_motif=None
+                probe_target_value = probe_target_extra_option
+            else:
+                peptide_motif={
+                    "chain_name": probe_target_value,
+                    "position": probe_target_value2,
+                }
+                probe_target_value = None
             experiment.add_probe(
                 probe_template=probe_template,
                 probe_name=probe_name,
                 probe_target_type=probe_target_type,
-                peptide_motif={
-                    "chain_name": probe_target_value,
-                    "position": probe_target_value2,
-                },
+                probe_target_value= probe_target_value,
+                peptide_motif = peptide_motif,
                 labelling_efficiency=labelling_efficiency,
                 probe_distance_to_epitope=probe_distance_to_epitope,
                 as_primary=as_linker,
@@ -355,13 +363,26 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
                 fluorophore_parameters=fluorophore_parameters,
             )
         elif probe_target_type == "Atom_residue":
-            residue = probes_gui["mock_type_options1"].value
-            atom = probes_gui["mock_type_options2"].value
+            residue = [probe_target_value,]
+            if probe_target_value2 == "All":
+                chains = None
+            else:
+                chains = list(probe_target_value2)
+            if probe_target_extra_option == '':
+                position = None
+            else:
+                position = int(probe_target_extra_option)
+            atom = ["CA",]
+            probe_target_value_dictionary = dict(
+                atoms=atom, 
+                residues=residue,
+                position=position,
+                chains=chains)
             experiment.add_probe(
                 probe_template=probe_template,
                 probe_name=probe_name,
                 probe_target_type=probe_target_type,
-                probe_target_value=dict(atoms=atom, residues=residue),
+                probe_target_value=probe_target_value_dictionary,
                 labelling_efficiency=labelling_efficiency,
                 probe_distance_to_epitope=probe_distance_to_epitope,
                 as_primary=as_linker,
@@ -436,15 +457,21 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         probes_gui["mock_type_options1"].options = options_per_type1[
             change.new
         ]
-        probes_gui["mock_type_options1"].value = options_per_type1[change.new][
-            0
-        ]
+        if options_per_type1[change.new] is not None:
+            probes_gui["mock_type_options1"].value = options_per_type1[change.new][
+                0
+            ]
+        else:
+            probes_gui["mock_type_options1"].value = None
         probes_gui["mock_type_options2"].options = options_per_type2[
             change.new
         ]
-        probes_gui["mock_type_options2"].value = options_per_type2[change.new][
-            0
-        ]
+        if options_per_type2[change.new] is not None:
+            probes_gui["mock_type_options2"].value = options_per_type2[change.new][
+                0
+            ]
+        else:
+            probes_gui["mock_type_options2"].value = None
 
     def clear_probes(b):
         experiment.remove_probes()
@@ -514,7 +541,11 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         style=dict(font_size="14px", color="darkblue"),
     )
     options_dictionary = dict(
-        Protein="Sequence", Residue="Atom_residue", Primary_Probe="Primary"
+        Protein="Sequence",
+        Residue="Atom_residue",
+        Primary_Probe="Primary",
+        Sequence="Sequence",
+        SiteSpecific="Atom_residue"
     )
     probes_gui.add_dropdown(
         "mock_type",
@@ -550,13 +581,21 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         Primary_Probe=[
             None,
         ],
+        Sequence=["N/A",],
+        SiteSpecific=list_of_residues,
     )
+    chain_options = ["All",]
+    for i in copy.copy(list(experiment.structure.chains_dict.keys())):
+        chain_options.append(i)
+    # experiment.structure.CIFdictionary["_chem_comp.id"]
     options_per_type2 = dict(
         Protein=["cterminal", "nterminal"],
-        Residue=["CA"],
+        Residue=chain_options,
         Primary_Probe=[
             None,
         ],
+        Sequence=["N/A",],
+        SiteSpecific=chain_options
     )
     probes_gui.add_dropdown(
         "mock_type_options1",
@@ -567,6 +606,11 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         "mock_type_options2",
         options=options_per_type2[probes_gui["mock_type"].value],
         description="Where: ",
+    )
+    probes_gui.add_text(
+        "text_options",
+        value=None,
+        description="Custom parameter"
     )
     probes_gui.add_HTML(
         "as_linker_info",
@@ -709,6 +753,9 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         )
         probe_widgets_visibility["mock_type_options2"] = (
             not probe_widgets_visibility["mock_type_options2"]
+        )
+        probe_widgets_visibility["text_options"] = (
+            not probe_widgets_visibility["text_options"]
         )
         probe_widgets_visibility["as_linker_info"] = (
             not probe_widgets_visibility["as_linker_info"]
@@ -856,6 +903,16 @@ def ui_select_sample_parameters(experiment):
         icon=toggle_icon,
     )
     ####  advanced parameters ####
+    sample_gui.add_int_text(
+        tag="sample_dimensionsXY",
+        description = "Sample dimensions (XY, in nm)",
+        value="1000",
+    )
+    sample_gui.add_int_text(
+        tag="sample_dimensionsZ",
+        description = "Sample dimensions (Z, in nm)",
+        value="100",
+    )
     sample_gui.add_checkbox(
         "use_min_from_particle",
         value=True,
@@ -904,6 +961,11 @@ def ui_select_sample_parameters(experiment):
         value=True,
         description="Randomise positions (enforced when there is more than one particle)",
         style={"description_width": "initial"},
+    )
+    sample_gui.add_float_text(
+        tag="expansion_factor",
+        description = "Expansion Factor",
+        value = 1,
     )
     sample_gui.add_button(
         "update_sample_parameters",
@@ -985,6 +1047,10 @@ def ui_select_sample_parameters(experiment):
     def update_parameters(b):
         random_rotations = sample_gui["random_rotations"].value
         random_orientations = sample_gui["random_orientations"].value
+        sample_dimensions= [
+            sample_gui["sample_dimensionsXY"].value,
+            sample_gui["sample_dimensionsXY"].value,
+            sample_gui["sample_dimensionsZ"].value]
         rotation_angles = None
         xy_orientations = None
         xz_orientations = None
@@ -1030,15 +1096,18 @@ def ui_select_sample_parameters(experiment):
             xy_orientations=xy_orientations,
             xz_orientations=xz_orientations,
             yz_orientations=yz_orientations,
-            axial_offset=axial_offset
+            axial_offset=axial_offset,
+            sample_dimensions=sample_dimensions
         )
         update_message()
 
     def select_virtual_sample_parameters(b):
+        expansion_factor = sample_gui["expansion_factor"].value
         with io.capture_output() as captured:
             experiment.build(modules=["coordinate_field"])
-            if experiment.objects_created["imager"]:
-                experiment.build(modules=["imager"])
+            if expansion_factor > 1:
+                experiment.coordinate_field.expand_isotropically(factor=expansion_factor)
+            experiment.build(modules=["imager"])
             update_message()
 
     def upload_and_set(b):
@@ -1076,6 +1145,12 @@ def ui_select_sample_parameters(experiment):
             update_message()
 
     def toggle_advanced_parameters(b):
+        widgets_visibility["sample_dimensionsXY"] = not widgets_visibility[
+            "sample_dimensionsXY"
+        ]
+        widgets_visibility["sample_dimensionsZ"] = not widgets_visibility[
+            "sample_dimensionsZ"
+        ]
         widgets_visibility["minimal_distance_nm"] = not widgets_visibility[
             "minimal_distance_nm"
         ]
@@ -1100,7 +1175,9 @@ def ui_select_sample_parameters(experiment):
         widgets_visibility["axial_offset"] = not widgets_visibility[
             "axial_offset"
         ]
-
+        widgets_visibility["expansion_factor"] = not widgets_visibility[
+            "expansion_factor"
+        ]
         widgets_visibility["fileupload_header"] = (
             not widgets_visibility["fileupload_header"]
         )
@@ -1156,14 +1233,14 @@ def ui_select_modality(experiment):
     EZInput
         Widget for modality selection and preview.
     """
-    modalities_default = ["Widefield", "Confocal", "STED", "SMLM", "All"]
+    modalities_default = copy.copy(experiment.example_modalities)
     #imager, preview_experiment = build_virtual_microscope(
     #    multimodal=modalities_default
     #)
     #preview_experiment = copy.deepcopy(experiment)
     xy_zoom_in = 0.5
     experiment.clear_modalities()
-    for mod_names in modalities_default[0 : len(modalities_default) - 1]:
+    for mod_names in modalities_default:
         experiment.add_modality(modality_name=mod_names, save=True)
     experiment.build(modules=["imager"])
     modality_gui = EZInput(title="Modality selection")
