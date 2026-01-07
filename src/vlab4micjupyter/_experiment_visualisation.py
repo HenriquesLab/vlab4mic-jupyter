@@ -612,7 +612,7 @@ def ui_set_acq_params(experiment):
                                 modality=Modality, **single_mod_acq_params
                             )
                         )
-                        volume = images_volumes[0]
+                        volume = images_volumes["raw_volume"][0]
                     return volume
 
             volume = get_volume(
