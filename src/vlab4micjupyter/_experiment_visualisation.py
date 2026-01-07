@@ -257,8 +257,7 @@ def ui_show_labelled_structure(experiment):
                     )
                 )
 
-    gui.add_button(
-        "show_labelled_structure",
+    gui.elements["show_labelled_structure"] = widgets.Button(
         description="Show labelled structure",
         icon=show_icon,
     )
@@ -365,8 +364,7 @@ def ui_show_virtual_sample(experiment):
                     "Virtual sample not created yet, please create it first."
                 )
 
-    gui.add_button(
-        "show_virtual_sample",
+    gui.elements["show_virtual_sample"] = widgets.Button(
         description="Show virtual sample",
         icon=show_icon,
     )
@@ -721,14 +719,14 @@ def ui_set_acq_params(experiment):
             keys_to_use=["exp_time", "noise", "nframes", "channels",],
         ),
     )
-    acquisition_gui.add_button(
-        "Set",
+    acquisition_gui.elements["Set"] = widgets.Button(
         description="Update acquisition parameters",
         icon=update_icon,
         style={"button_color": update_colour},
     )
-    acquisition_gui.add_button(
-        "Clear", description="Reset params", icon=reset_icon
+    acquisition_gui.elements["Clear"] = widgets.Button(
+        description="Reset params",
+        icon=reset_icon,
     )
     acquisition_gui["Set"].on_click(set_params)
     acquisition_gui["Clear"].on_click(clear)
@@ -819,8 +817,7 @@ def ui_preview_results(experiment):
         style={"text-align": "center", "margin-bottom": "20px"},
     )
     # gui.add_label("Preview Results of the Experiment")
-    gui.add_button(
-        "show_results",
+    gui.elements["show_results"] = widgets.Button(
         description="Show Results",
         icon=show_icon,
     )

@@ -717,11 +717,10 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         style={"description_width": "initial"},
     )
 
-    probes_gui.add_button(
-        "add_custom_probe",
+    probes_gui.elements["add_custom_probe"] = widgets.Button(
         description="Add probe with custom parameters",
         disabled=False,
-        icon=add_icon,
+        icon=add_icon
     )
     probes_gui["mock_type"].observe(type_dropdown_change, names="value")
 
