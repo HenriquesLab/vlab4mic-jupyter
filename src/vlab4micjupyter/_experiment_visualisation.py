@@ -692,7 +692,7 @@ def ui_set_acq_params(experiment):
     )
     acquisition_gui.add_bounded_int_text(
         "Frames",
-        description="Frames (not used for preview)",
+        description="Frames (used when running simulation)",
         vmin=1,
         vmax=100000,
         value=1,
@@ -732,14 +732,14 @@ def ui_set_acq_params(experiment):
     acquisition_gui["Clear"].on_click(clear)
     acquisition_gui.add_checkbox(
         "show_preview",
-        description="Show interactive acquisition preview",
+        description="Preview acquisition settings",
         value=False,
         on_change=preview_mod,
         continuous_update=False,
     )
     acquisition_gui.add_checkbox(
         "show_as_volume",
-        description="Show interactive acquisition convolved volume (experimental feature)",
+        description="Show preview as volume projection (for visualisation purposes only)",
         value=False,
         on_change=preview_volume,
         continuous_update=False,
