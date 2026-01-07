@@ -314,7 +314,7 @@ def add_parameters_values(sweep_gen):
         for param_name, param_info in params.items():
             param_widget = range_widgets[param_name]
             sweep_parameter_gui.elements[param_name] = param_widget
-            sweep_parameter_gui.add_label()
+            sweep_parameter_gui.add_label(None)
 
     sweep_parameter_gui.add_button(
         "select_parameters",

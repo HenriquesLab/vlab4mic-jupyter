@@ -685,7 +685,7 @@ def ui_set_acq_params(experiment):
             )
         return mods_text
 
-    acquisition_gui.add_label("Set acquisition parameters")
+    acquisition_gui.add_label(None, "Set acquisition parameters")
     selected_mods = list(experiment.imaging_modalities.keys())
     acquisition_gui.add_dropdown("modalities_dropdown", options=selected_mods)
     acquisition_gui.add_checkbox("Noise", description="Use Noise", value=True)

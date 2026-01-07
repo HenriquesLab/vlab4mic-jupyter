@@ -149,6 +149,7 @@ def ui_select_structure(experiment):
         options=experiment.structures_info_list.keys(),
     )
     gui.add_label(
+        None,
         "Note: Time for structure loading varies depending on the size of the structure"
     )
     gui.elements["toggle_advanced_parameters"] = widgets.Button(
@@ -858,7 +859,7 @@ def ui_select_sample_parameters(experiment):
     """
     sample_gui = EZInput(title="Sample parameters")
     # Add widgets for sample parameters
-    sample_gui.add_label("Current sample parameters selected:")
+    sample_gui.add_label(None, "Current sample parameters selected:")
 
     sample_gui.add_HTML("message", "")
 
@@ -1517,11 +1518,11 @@ def ui_run_experiment(experiment):
         as_string=True, newline="<br>"
     )
     run_gui.add_HTML("experiment_info", experiment_info)
-    run_gui.add_label("Set experiment name")
+    run_gui.add_label(None, "Set experiment name")
     run_gui.add_text_area(
         "experiment_name", value="Exp_name", remember_value=True
     )
-    run_gui.add_label("Set saving directory")
+    run_gui.add_label(None, "Set saving directory")
     run_gui.elements["saving_directory"] = FileChooser(
         experiment.output_directory,
         title="<b>Select output directory</b>",
