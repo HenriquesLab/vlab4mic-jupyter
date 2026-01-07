@@ -161,7 +161,7 @@ def ui_show_structure(experiment):
         step=1,
         value=1000,
         on_change=update_plot,
-        continuous_update=False,
+        # continuous_update=False,
         disabled=True,
     )
     gui.add_int_slider(
@@ -172,7 +172,7 @@ def ui_show_structure(experiment):
         step=1,
         value=0,
         on_change=update_plot,
-        continuous_update=False,
+        # continuous_update=False,
     )
     gui.add_int_slider(
         "vview",
@@ -182,7 +182,7 @@ def ui_show_structure(experiment):
         step=1,
         value=0,
         on_change=update_plot,
-        continuous_update=False,
+        # continuous_update=False,
     )
 
     def enable_view_widgets(b):
@@ -257,8 +257,7 @@ def ui_show_labelled_structure(experiment):
                     )
                 )
 
-    gui.add_button(
-        "show_labelled_structure",
+    gui.elements["show_labelled_structure"] = widgets.Button(
         description="Show labelled structure",
         icon=show_icon,
     )
@@ -269,7 +268,7 @@ def ui_show_labelled_structure(experiment):
         max=30,
         step=1,
         value=1,
-        continuous_update=False,
+        # continuous_update=False,
         on_change=show_labelled_structure,
         disabled=True,
     )
@@ -280,7 +279,7 @@ def ui_show_labelled_structure(experiment):
         max=30,
         step=1,
         value=1,
-        continuous_update=False,
+        # continuous_update=False,
         on_change=show_labelled_structure,
         disabled=True,
     )
@@ -291,7 +290,7 @@ def ui_show_labelled_structure(experiment):
         max=90,
         step=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
         on_change=show_labelled_structure,
         disabled=True,
     )
@@ -302,7 +301,7 @@ def ui_show_labelled_structure(experiment):
         max=90,
         step=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
         on_change=show_labelled_structure,
         disabled=True,
     )
@@ -365,8 +364,7 @@ def ui_show_virtual_sample(experiment):
                     "Virtual sample not created yet, please create it first."
                 )
 
-    gui.add_button(
-        "show_virtual_sample",
+    gui.elements["show_virtual_sample"] = widgets.Button(
         description="Show virtual sample",
         icon=show_icon,
     )
@@ -377,7 +375,7 @@ def ui_show_virtual_sample(experiment):
         max=90,
         step=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
         on_change=update_plot,
         disabled=True,
     )
@@ -388,7 +386,7 @@ def ui_show_virtual_sample(experiment):
         max=90,
         step=1,
         value=90,
-        continuous_update=False,
+        # continuous_update=False,
         on_change=update_plot,
         disabled=True,
     )
@@ -685,7 +683,7 @@ def ui_set_acq_params(experiment):
             )
         return mods_text
 
-    acquisition_gui.add_label("Set acquisition parameters")
+    acquisition_gui.add_label(None, "Set acquisition parameters")
     selected_mods = list(experiment.imaging_modalities.keys())
     acquisition_gui.add_dropdown("modalities_dropdown", options=selected_mods)
     acquisition_gui.add_checkbox("Noise", description="Use Noise", value=True)
@@ -721,14 +719,14 @@ def ui_set_acq_params(experiment):
             keys_to_use=["exp_time", "noise", "nframes", "channels",],
         ),
     )
-    acquisition_gui.add_button(
-        "Set",
+    acquisition_gui.elements["Set"] = widgets.Button(
         description="Update acquisition parameters",
         icon=update_icon,
         style={"button_color": update_colour},
     )
-    acquisition_gui.add_button(
-        "Clear", description="Reset params", icon=reset_icon
+    acquisition_gui.elements["Clear"] = widgets.Button(
+        description="Reset params",
+        icon=reset_icon,
     )
     acquisition_gui["Set"].on_click(set_params)
     acquisition_gui["Clear"].on_click(clear)
@@ -819,15 +817,14 @@ def ui_preview_results(experiment):
         style={"text-align": "center", "margin-bottom": "20px"},
     )
     # gui.add_label("Preview Results of the Experiment")
-    gui.add_button(
-        "show_results",
+    gui.elements["show_results"] = widgets.Button(
         description="Show Results",
         icon=show_icon,
     )
 
     def update_plot(change):
         modality = gui["modality"].value
-        image = experiment.results[modality]
+        image = experiment.results[modality]["ch0"] #
         if image.ndim == 3:
             image = image[0]
         figure, ax = plt.subplots(figsize=(8, 6))
