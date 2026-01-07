@@ -149,11 +149,11 @@ def ui_select_structure(experiment):
         options=experiment.structures_info_list.keys(),
     )
     gui.add_label(
+        None,
         "Note: Time for structure loading varies depending on the size of the structure"
     )
-    gui.add_button(
-        "toggle_advanced_parameters",
-        description="Load structure from file",
+    gui.elements["toggle_advanced_parameters"] = widgets.Button(
+        description="Load structure from file"
     )
     # advanced parameters
     gui.add_HTML(
@@ -167,12 +167,11 @@ def ui_select_structure(experiment):
         accept=["*.pdb", "*.cif"],
         save_settings=False,
     )
-    gui.add_button(
-        "select_structure_from_file",
+    gui.elements["select_structure_from_file"] = widgets.Button(
         description="Select structure from file",
         icon=select_icon,
-        style={"button_color": select_colour},
-    )        
+        style={"button_color": select_colour}
+    )
     gui.add_callback(
         "select_structure",
         select_structure,
@@ -500,10 +499,9 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
     )
     probes_gui.add_HTML("probe_info", "")
     probes_gui["select_probe_template"].observe(show_probe_info, names="value")
-    probes_gui.add_button(
-        "toggle_advanced_parameters",
+    probes_gui.elements["toggle_advanced_parameters"] = widgets.Button(
         description="Toggle advanced parameters",
-        icon=toggle_icon,
+        icon=toggle_icon
     )
     # advanced parameters
     probes_gui.add_HTML(
@@ -719,11 +717,10 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         style={"description_width": "initial"},
     )
 
-    probes_gui.add_button(
-        "add_custom_probe",
+    probes_gui.elements["add_custom_probe"] = widgets.Button(
         description="Add probe with custom parameters",
         disabled=False,
-        icon=add_icon,
+        icon=add_icon
     )
     probes_gui["mock_type"].observe(type_dropdown_change, names="value")
 
@@ -816,18 +813,16 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         description="Add probe (with defaults)",
         icon=add_icon,
     )
-    probes_gui.add_button(
-        "clear_probes",
+    probes_gui.elements["clear_probes"] = widgets.Button(
         description="Clear all probes",
         icon=clear_icon,
-        style={"button_color": remove_colour},
+        style={"button_color": remove_colour}
     )
-    probes_gui.add_button(
-        "create_particle",
+    probes_gui.elements["create_particle"] = widgets.Button(
         description="Select probes and create labelled structure",
         style={"button_color": select_colour},
         icon=select_icon,
-        disabled=True,
+        disabled=True
     )
     probes_gui.add_HTML(
         "message2",
@@ -863,7 +858,7 @@ def ui_select_sample_parameters(experiment):
     """
     sample_gui = EZInput(title="Sample parameters")
     # Add widgets for sample parameters
-    sample_gui.add_label("Current sample parameters selected:")
+    sample_gui.add_label(None, "Current sample parameters selected:")
 
     sample_gui.add_HTML("message", "")
 
@@ -897,10 +892,9 @@ def ui_select_sample_parameters(experiment):
     sample_gui.add_checkbox(
         "random_rotations", description="Randomise rotations in plane", value=True
     )
-    sample_gui.add_button(
-        "advanced_parameters",
+    sample_gui.elements["advanced_parameters"] = widgets.Button(
         description="Toggle advanced parameters",
-        icon=toggle_icon,
+        icon=toggle_icon
     )
     ####  advanced parameters ####
     sample_gui.add_int_text(
@@ -967,18 +961,16 @@ def ui_select_sample_parameters(experiment):
         description = "Expansion Factor",
         value = 1,
     )
-    sample_gui.add_button(
-        "update_sample_parameters",
+    sample_gui.elements["update_sample_parameters"] = widgets.Button(
         description="Update sample parameters",
         icon=update_icon,
-        style={"button_color": update_colour},
+        style={"button_color": update_colour}
     )
-    sample_gui.add_button(
-        "select_sample_parameters",
+    sample_gui.elements["select_sample_parameters"] = widgets.Button(
         description="Select parameters and build virtual sample",
         disabled=False,
         icon=select_icon,
-        style={"button_color": select_colour},
+        style={"button_color": select_colour}
     )
     sample_gui.add_HTML(
         tag="fileupload_header",
@@ -1033,12 +1025,11 @@ def ui_select_sample_parameters(experiment):
         value="Local Maxima",
         style={"description_width": "initial"},
     )
-    sample_gui.add_button(
-        "upload_and_set",
+    sample_gui.elements["upload_and_set"] = widgets.Button(
         description="Load image and select parameters",
         disabled=False,
         icon=upload_icon,
-        style={"button_color": select_colour},
+        style={"button_color": select_colour}
     )
     sample_gui.add_HTML(
         "advanced_params_feedback", "", style=dict(font_weight="bold")
@@ -1244,7 +1235,7 @@ def ui_select_modality(experiment):
         experiment.add_modality(modality_name=mod_names, save=True)
     experiment.build(modules=["imager"])
     modality_gui = EZInput(title="Modality selection")
-    modality_gui.add_label("Current modalities list:")
+    modality_gui.add_label(None, "Current modalities list:")
     modality_gui.add_HTML("message", "No modalities selected yet.")
 
     def update_message():
@@ -1513,7 +1504,7 @@ def ui_run_experiment(experiment):
         experiment.experiment_id = run_gui["experiment_name"].value
         with io.capture_output() as captured:
             output = experiment.run_simulation(save=save)
-        run_gui.save_settings()
+        #run_gui.save_settings()
         if output is None:
             run_gui["message"].value = (
                 "Simulation failed. Make sure all parameters are set correctly."
@@ -1526,11 +1517,11 @@ def ui_run_experiment(experiment):
         as_string=True, newline="<br>"
     )
     run_gui.add_HTML("experiment_info", experiment_info)
-    run_gui.add_label("Set experiment name")
+    run_gui.add_label(None, "Set experiment name")
     run_gui.add_text_area(
         "experiment_name", value="Exp_name", remember_value=True
     )
-    run_gui.add_label("Set saving directory")
+    run_gui.add_label(None, "Set saving directory")
     run_gui.elements["saving_directory"] = FileChooser(
         experiment.output_directory,
         title="<b>Select output directory</b>",
@@ -1539,11 +1530,10 @@ def ui_run_experiment(experiment):
         show_only_dirs=False,
     )
     run_gui.add_HTML("message", "", style=dict(font_weight="bold"))
-    run_gui.add_button(
-        "Acquire",
+    run_gui.elements["Acquire"] = widgets.Button(
         description="Run Simulation",
         icon=select_icon,
-        style={"button_color": select_colour},
+        style={"button_color": select_colour}
     )
     run_gui["Acquire"].on_click(run_simulation)
     return run_gui

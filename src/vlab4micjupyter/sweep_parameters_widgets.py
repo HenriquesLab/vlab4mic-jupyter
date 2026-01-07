@@ -151,11 +151,10 @@ def select_structure(sweep_gen):
         value="Note: parsing of the structure will be done when running the sweep",
         style={"font_size": "15px"},
     )
-    ez_sweep_structure.add_button(
-        "Select",
+    ez_sweep_structure.elements["Select"] = widgets.Button(
         description="Select",
         icon=select_icon,
-        style={"button_color": select_colour},
+        style={"button_color": select_colour}
     )
 
     def select(b):
@@ -197,9 +196,8 @@ def select_structure(sweep_gen):
         ]
         update_widgets_visibility(ez_sweep_structure, widgets_visibility)
 
-    ez_sweep_structure.add_button(
-        "toggle_advanced_parameters",
-        description="Load structure from file",
+    ez_sweep_structure.elements["toggle_advanced_parameters"] = widgets.Button(
+        description="Load structure from file"
     )
     # advanced parameters
     ez_sweep_structure.add_HTML(
@@ -213,11 +211,10 @@ def select_structure(sweep_gen):
         accept=["*.pdb", "*.cif"],
         save_settings=False,
     )
-    ez_sweep_structure.add_button(
-        "select_structure_from_file",
+    ez_sweep_structure.elements["select_structure_from_file"] = widgets.Button(
         description="Select structure from file",
         icon=select_icon,
-        style={"button_color": select_colour},
+        style={"button_color": select_colour}
     )
     widgets_visibility = {}
     _unstyle_widgets(ez_sweep_structure, widgets_visibility)
@@ -276,11 +273,10 @@ def select_probes_and_mods(sweep_gen):
         for name in tab_name:
             widget_modules[name].disabled = True
 
-    ez_sweep.add_button(
-        "Select",
+    ez_sweep.elements["Select"] = widgets.Button(
         description="Select",
         icon=select_icon,
-        style={"button_color": select_colour},
+        style={"button_color": select_colour}
     )
     ez_sweep["Select"].on_click(select_str)
     return ez_sweep
@@ -314,19 +310,17 @@ def add_parameters_values(sweep_gen):
         for param_name, param_info in params.items():
             param_widget = range_widgets[param_name]
             sweep_parameter_gui.elements[param_name] = param_widget
-            sweep_parameter_gui.add_label()
+            sweep_parameter_gui.add_label(None)
 
-    sweep_parameter_gui.add_button(
-        "select_parameters",
-        "Select parameters for sweep",
+    sweep_parameter_gui.elements["select_parameters"] = widgets.Button(
+        description="Select parameters for sweep",
         icon=select_icon,
-        style={"button_color": select_colour},
+        style={"button_color": select_colour}
     )
-    sweep_parameter_gui.add_button(
-        "clear_parameters",
-        "Clear all parameters",
+    sweep_parameter_gui.elements["clear_parameters"] = widgets.Button(
+        description="Clear all parameters",
         icon=remove_icon,
-        style={"button_color": remove_colour},
+        style={"button_color": remove_colour}
     )
     sweep_parameter_gui.add_HTML(
         tag="message",
@@ -450,10 +444,9 @@ def set_reference(sweep_gen):
         description="Modality",
         disabled=True,
     )
-    reference.add_button(
-        "advanced_parameters",
+    reference.elements["advanced_parameters"] = widgets.Button(
         description="Toggle advanced parameters",
-        icon=toggle_icon,
+        icon=toggle_icon
     )
     # advanced parameters
     reference.add_HTML(
@@ -492,11 +485,10 @@ def set_reference(sweep_gen):
         step=0.1,
         style={"description_width": "initial"},
     )
-    reference.add_button(
-        "upload_and_set",
+    reference.elements["upload_and_set"] = widgets.Button(
         description="Upload image reference",
         disabled=False,
-        icon=upload_icon,
+        icon=upload_icon
     )
 
     def toggle_advanced_parameters(b):
@@ -535,17 +527,15 @@ def set_reference(sweep_gen):
         reference["preview"].disabled = False
 
     #
-    reference.add_button(
-        "set",
+    reference.elements["set"] = widgets.Button(
         description="Generate image reference",
         icon=select_colour,
-        style={"button_color": select_colour},
+        style={"button_color": select_colour}
     )
-    reference.add_button(
-        "preview",
+    reference.elements["preview"] = widgets.Button(
         description="Preview reference",
         disabled=True,
-        icon=view_icon,
+        icon=view_icon
     )
     reference.elements["feedback"] = widgets.HTML(
         "", style=dict(font_size="15px", font_weight="bold")
@@ -702,11 +692,10 @@ def analyse_sweep(sweep_gen):
     analysis_widget.add_checkbox(
         "plots", description="Generate plots", value=True
     )
-    analysis_widget.add_button(
-        "analyse",
+    analysis_widget.elements["analyse"] = widgets.Button(
         description="Run analysis",
         icon=select_colour,
-        style={"button_color": select_colour},
+        style={"button_color": select_colour}
     )
     analysis_widget.elements["feedback"] = widgets.HTML(
         "", style=dict(font_size="15px", font_weight="bold")
@@ -801,8 +790,10 @@ def analyse_sweep(sweep_gen):
         preview_disabled = True
     else:
         preview_disabled = False
-    analysis_widget.add_button(
-        "preview", description="Preview results", disabled=preview_disabled, icon=view_icon
+    analysis_widget.elements["preview"] = widgets.Button(
+        description="Preview results",
+        disabled=preview_disabled,
+        icon=view_icon
     )
     analysis_widget.add_int_slider(
         "modality_template",
@@ -810,7 +801,7 @@ def analyse_sweep(sweep_gen):
         min=0,
         max=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
     )
     analysis_widget.add_int_slider(
         "probe_template",
@@ -818,7 +809,7 @@ def analyse_sweep(sweep_gen):
         min=0,
         max=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
     )
     analysis_widget.add_int_slider(
         "probe_parameters",
@@ -826,7 +817,7 @@ def analyse_sweep(sweep_gen):
         min=0,
         max=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
     )
     analysis_widget.add_int_slider(
         "defect_parameters",
@@ -834,7 +825,7 @@ def analyse_sweep(sweep_gen):
         min=0,
         max=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
     )
     analysis_widget.add_int_slider(
         "vsample_parameters",
@@ -842,7 +833,7 @@ def analyse_sweep(sweep_gen):
         min=0,
         max=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
     )
     analysis_widget.add_int_slider(
         "acquisition_parameters",
@@ -850,7 +841,7 @@ def analyse_sweep(sweep_gen):
         min=0,
         max=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
     )
     analysis_widget.add_int_slider(
         "replica_number",
@@ -858,7 +849,7 @@ def analyse_sweep(sweep_gen):
         min=0,
         max=1,
         value=0,
-        continuous_update=False,
+        # continuous_update=False,
     )
     # connect the preview widgets to the update function
     analysis_widget["modality_template"].observe(update_plot, names="value")
@@ -879,8 +870,10 @@ def analyse_sweep(sweep_gen):
     analysis_widget.add_checkbox(
         "save_images", description="Save images", value=False
     )
-    analysis_widget.add_button(
-        "save", description="save analysis", disabled=True, icon=save_icon
+    analysis_widget.elements["save"] = widgets.Button(
+        description="save analysis",
+        disabled=True,
+        icon=save_icon
     )
     widgets_visibility = {}
     _unstyle_widgets(analysis_widget, widgets_visibility)
