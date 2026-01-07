@@ -1235,7 +1235,7 @@ def ui_select_modality(experiment):
         experiment.add_modality(modality_name=mod_names, save=True)
     experiment.build(modules=["imager"])
     modality_gui = EZInput(title="Modality selection")
-    modality_gui.add_label("Current modalities list:")
+    modality_gui.add_label(None, "Current modalities list:")
     modality_gui.add_HTML("message", "No modalities selected yet.")
 
     def update_message():
@@ -1504,7 +1504,7 @@ def ui_run_experiment(experiment):
         experiment.experiment_id = run_gui["experiment_name"].value
         with io.capture_output() as captured:
             output = experiment.run_simulation(save=save)
-        run_gui.save_settings()
+        #run_gui.save_settings()
         if output is None:
             run_gui["message"].value = (
                 "Simulation failed. Make sure all parameters are set correctly."

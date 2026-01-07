@@ -824,7 +824,7 @@ def ui_preview_results(experiment):
 
     def update_plot(change):
         modality = gui["modality"].value
-        image = experiment.results[modality]
+        image = experiment.results[modality]["ch0"] #
         if image.ndim == 3:
             image = image[0]
         figure, ax = plt.subplots(figsize=(8, 6))
