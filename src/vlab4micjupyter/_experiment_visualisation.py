@@ -612,7 +612,7 @@ def ui_set_acq_params(experiment):
                                 modality=Modality, **single_mod_acq_params
                             )
                         )
-                        volume = images_volumes[0]
+                        volume = images_volumes["raw_volume"][0]
                     return volume
 
             volume = get_volume(
@@ -692,7 +692,7 @@ def ui_set_acq_params(experiment):
     )
     acquisition_gui.add_bounded_int_text(
         "Frames",
-        description="Frames (not used for preview)",
+        description="Frames (used when running simulation)",
         vmin=1,
         vmax=100000,
         value=1,
@@ -732,14 +732,14 @@ def ui_set_acq_params(experiment):
     acquisition_gui["Clear"].on_click(clear)
     acquisition_gui.add_checkbox(
         "show_preview",
-        description="Show interactive acquisition preview",
+        description="Preview acquisition settings",
         value=False,
         on_change=preview_mod,
         continuous_update=False,
     )
     acquisition_gui.add_checkbox(
         "show_as_volume",
-        description="Show interactive acquisition convolved volume (experimental feature)",
+        description="Show preview as volume projection (for visualisation purposes only)",
         value=False,
         on_change=preview_volume,
         continuous_update=False,
@@ -807,7 +807,11 @@ def ui_preview_results(experiment):
                 0
             ]  # Set initial value
             gui["modality"].layout.display = "inline-flex"
-            gui["modality"].observe(update_plot, names="value")
+            gui["modality"].observe(update_slice_range, names="value")
+            update_slice_range(True)
+            gui["slice_index"].layout.display = "inline-flex"
+            gui["slice_index"].disabled = False
+            gui["slice_index"].observe(update_plot, names="value")
             with gui["preview_results"]:
                 update_plot(True)
 
@@ -821,12 +825,12 @@ def ui_preview_results(experiment):
         description="Show Results",
         icon=show_icon,
     )
-
     def update_plot(change):
         modality = gui["modality"].value
+        slice_index = gui["slice_index"].value
         image = experiment.results[modality]["ch0"] #
         if image.ndim == 3:
-            image = image[0]
+            image = image[slice_index]
         figure, ax = plt.subplots(figsize=(8, 6))
         ax.imshow(image, cmap="gray")
         ax.axis("off")
@@ -835,6 +839,19 @@ def ui_preview_results(experiment):
         gui["preview_results"].clear_output()
         with gui["preview_results"]:
             display(figure)
+    
+    def update_slice_range(change):
+        modality = gui["modality"].value
+        image = experiment.results[modality]["ch0"]
+        if image.ndim == 3:
+            max_index = image.shape[0] - 1
+            gui["slice_index"].max = max_index
+            gui["slice_index"].disabled = False
+            image = image[gui["slice_index"].value]
+        else:
+            gui["slice_index"].max = 1
+            gui["slice_index"].disabled = True
+        update_plot(True)
 
     gui.add_dropdown(
         "modality",
@@ -843,7 +860,18 @@ def ui_preview_results(experiment):
         value=value_modalities,
         disabled=True,
     )
+    gui.add_int_slider(
+        "slice_index",
+        description="Frame index",
+        min=0,
+        max=1,
+        step=1,
+        value=0,
+        disabled=True,
+        continuous_update=False,
+    )
     gui["modality"].layout = widgets.Layout(width="50%", display="None")
+    gui["slice_index"].layout = widgets.Layout(width="50%", display="None")
     gui.add_output("preview_results")
     gui["show_results"].on_click(show_results)
     return gui
