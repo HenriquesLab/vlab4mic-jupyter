@@ -897,6 +897,10 @@ def ui_select_sample_parameters(experiment):
         icon=toggle_icon
     )
     ####  advanced parameters ####
+    sample_gui.add_HTML(
+        tag="advanced_parameters_header",
+        value="<b>Option 1: Parameterise virtual sample dimensions and labelled particle placement </b>",
+    )
     sample_gui.add_int_text(
         tag="sample_dimensionsXY",
         description = "Sample dimensions (XY, in nm)",
@@ -923,7 +927,7 @@ def ui_select_sample_parameters(experiment):
     )
     sample_gui.add_HTML(
         tag="rotations_header",
-        value="<b>Specify values as a comma-separated list (e.g. 20,24,45)</b>",
+        value="<b>Note:</b> For the following angles and Z offset parameters, specify the list of values to use by writing them as a comma-separated list (e.g. 20,24,45)",
     )
     sample_gui.add_text(
         tag="rotation_angles",
@@ -974,7 +978,11 @@ def ui_select_sample_parameters(experiment):
     )
     sample_gui.add_HTML(
         tag="fileupload_header",
-        value="<b>Select from file</b>",
+        value="<b>Option 2: Parameterise virtual sample from an image. </b>",
+    )
+    sample_gui.add_HTML(
+        tag="fileupload_header_note",
+        value="<b>Note:</b> The image will be used to detect particle positions based on intensity peaks.",
     )
     sample_gui.add_file_upload(
         "File",
@@ -984,7 +992,7 @@ def ui_select_sample_parameters(experiment):
     )
     sample_gui.add_bounded_int_text(
         "pixel_size",
-        description="Pixel size (nm)",
+        description="Pixel size of image (nm)",
         value=100,
         vmin=1,
         vmax=1000,
@@ -993,7 +1001,7 @@ def ui_select_sample_parameters(experiment):
     )
     sample_gui.add_bounded_int_text(
         "background_intensity",
-        description="Background intensity",
+        description="Background intensity of image",
         value=0,
         vmin=0,
         vmax=100000,
@@ -1002,7 +1010,7 @@ def ui_select_sample_parameters(experiment):
     )
     sample_gui.add_bounded_int_text(
         "blur_sigma",
-        description="Gaussian blurr sigma (nm)",
+        description="Gaussian blur to apply (pixels)",
         value=0,
         vmin=0,
         vmax=1000,
@@ -1011,7 +1019,7 @@ def ui_select_sample_parameters(experiment):
     )
     sample_gui.add_bounded_int_text(
         "intensity_threshold",
-        description="Intensity threshold",
+        description="Intensity threshold for particle detection)",
         value=0,
         vmin=0,
         vmax=10000,
@@ -1136,6 +1144,9 @@ def ui_select_sample_parameters(experiment):
             update_message()
 
     def toggle_advanced_parameters(b):
+        widgets_visibility["advanced_parameters_header"] = (
+            not widgets_visibility["advanced_parameters_header"]
+        )
         widgets_visibility["sample_dimensionsXY"] = not widgets_visibility[
             "sample_dimensionsXY"
         ]
@@ -1171,6 +1182,9 @@ def ui_select_sample_parameters(experiment):
         ]
         widgets_visibility["fileupload_header"] = (
             not widgets_visibility["fileupload_header"]
+        )
+        widgets_visibility["fileupload_header_note"] = (
+            not widgets_visibility["fileupload_header_note"]
         )
         widgets_visibility["upload_and_set"] = not widgets_visibility[
             "upload_and_set"
