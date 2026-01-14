@@ -935,12 +935,12 @@ def create_param_widgets(sweep_gen):
                 if settings["wtype"] == "float_slider":
                     slidertype = "float"
                     steps_text = wgen.gen_bound_float(
-                        value=0.1, description="Step size"
+                        value=0.1, max=settings["range"][1], description="Step size"
                     )
                 else:
                     slidertype = "int"
                     steps_text = wgen.gen_bound_int(
-                        value=1, description="Step size"
+                        value=1, max=settings["range"][1], description="Step size"
                     )
                 slider = wgen.gen_range_slider(
                     slidertype=slidertype,
@@ -950,7 +950,6 @@ def create_param_widgets(sweep_gen):
                     style={"description_width": "initial"},
                     layout=widgets.Layout(width="40%"),
                 )
-                
                 # Use formatted parameter name for display
                 formatted_name = format_parameter_name(parameter_name)
                 name = widgets.HTML(
