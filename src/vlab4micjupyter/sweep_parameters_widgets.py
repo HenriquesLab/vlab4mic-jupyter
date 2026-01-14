@@ -918,8 +918,14 @@ def create_param_widgets(sweep_gen):
             ):
                 if settings["wtype"] == "float_slider":
                     slidertype = "float"
+                    steps_text = wgen.gen_bound_float(
+                        value=0.1, description="Step size"
+                    )
                 else:
                     slidertype = "int"
+                    steps_text = wgen.gen_bound_int(
+                        value=1, description="Step size"
+                    )
                 slider = wgen.gen_range_slider(
                     slidertype=slidertype,
                     minmaxstep=settings["range"],
@@ -928,9 +934,7 @@ def create_param_widgets(sweep_gen):
                     style={"description_width": "initial"},
                     layout=widgets.Layout(width="40%"),
                 )
-                inttext = wgen.gen_bound_int(
-                    value=settings["nintervals"], description="Total values"
-                )
+                
                 # Use formatted parameter name for display
                 formatted_name = format_parameter_name(parameter_name)
                 name = widgets.HTML(
@@ -941,7 +945,8 @@ def create_param_widgets(sweep_gen):
                     description="Use parameter",
                     style={"description_width": "initial"},
                 )
-                items = [name, check, slider, inttext]
+                
+                items = [name, check, slider, steps_text]
                 range_widgets[parameter_name] = widgets.VBox(items)
             elif settings["wtype"] == "logical":
                 # Use formatted parameter name for display

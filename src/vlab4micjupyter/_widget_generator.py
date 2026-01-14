@@ -23,13 +23,14 @@ class widgen:
         if layout is None:
             layout = self.layout_config
         if slidertype == "int":
+            step_size = 1
             if minmaxstep is None:
                 minmaxstep = self.int_minmaxstep
             range_slider = widgets.IntRangeSlider(
                 value=[minmaxstep[0], minmaxstep[1]],
                 min=minmaxstep[0],
                 max=minmaxstep[1],
-                step=minmaxstep[2],
+                step=step_size,
                 description=description,
                 disabled=False,
                 orientation=orientation,
@@ -37,13 +38,14 @@ class widgen:
                 **kwargs
             )
         if slidertype == "float":
+            step_size = 0.1
             if minmaxstep is None:
                 minmaxstep = self.float_minmaxstep
             range_slider = widgets.FloatRangeSlider(
                 value=[minmaxstep[0], minmaxstep[1]],
                 min=minmaxstep[0],
                 max=minmaxstep[1],
-                step=minmaxstep[2],
+                step=step_size,
                 description=description,
                 disabled=False,
                 orientation=orientation,
@@ -71,6 +73,16 @@ class widgen:
             **kwargs
         )
         return bound_int
+    
+    def gen_bound_float(self, value = 0.1, max = 1, **kwargs):
+        bound_float = widgets.BoundedFloatText(
+            value=value,
+            min=0,
+            max=max,
+            step=0.001,
+            **kwargs
+        )
+        return bound_float
     
     def gen_box(self, widget1=None, widget2=None, orientation="horizontal", **kwargs):
         items = [widget1, widget2]
