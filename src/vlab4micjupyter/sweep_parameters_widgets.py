@@ -335,14 +335,30 @@ def add_parameters_values(sweep_gen):
                     print(
                         f"Setting parameter {param_name} in group {group_name}"
                     )
-                    if param_info["wtype"] != "logical":
-                        start, end = (
-                            sweep_parameter_gui[param_name].children[2].value
-                        )
-                        steps = (
-                            sweep_parameter_gui[param_name].children[3].value
-                        )
-                        param_values = (start, end, steps)
+                    if param_info["wtype"] != "logical":  # range slider
+                        use_list = sweep_parameter_gui[param_name].children[2].value
+                        if use_list:
+                            # parse list of values
+                            list_of_values_text = sweep_parameter_gui[
+                                param_name
+                            ].children[5].value
+                            str_values = list_of_values_text.split(",")
+                            if param_info["wtype"] == "float_slider":
+                                param_values = [
+                                    float(val.strip()) for val in str_values
+                                ]
+                            else:
+                                param_values = [
+                                    int(val.strip()) for val in str_values
+                                ]
+                        else:   
+                            start, end = (
+                                sweep_parameter_gui[param_name].children[3].value
+                            )
+                            steps = (
+                                sweep_parameter_gui[param_name].children[4].value
+                            )
+                            param_values = (start, end, steps)
                     else:
                         val = sweep_parameter_gui[param_name].children[2].value
                         if val == "Both":
@@ -945,8 +961,17 @@ def create_param_widgets(sweep_gen):
                     description="Use parameter",
                     style={"description_width": "initial"},
                 )
-                
-                items = [name, check, slider, steps_text]
+                check2 = widgets.Checkbox(
+                    value=False,
+                    description="Use list of values",
+                    style={"description_width": "initial"},
+                )
+                list_of_values = widgets.Text(
+                    value="",
+                    description="List of values (comma separated)",
+                    style={"description_width": "initial"},
+                )
+                items = [name, check, check2, slider, steps_text, list_of_values]
                 range_widgets[parameter_name] = widgets.VBox(items)
             elif settings["wtype"] == "logical":
                 # Use formatted parameter name for display
