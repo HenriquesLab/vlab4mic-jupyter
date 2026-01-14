@@ -341,7 +341,7 @@ def add_parameters_values(sweep_gen):
                             # parse list of values
                             list_of_values_text = sweep_parameter_gui[
                                 param_name
-                            ].children[5].value
+                            ].children[6].value
                             str_values = list_of_values_text.split(",")
                             if param_info["wtype"] == "float_slider":
                                 param_values = [
