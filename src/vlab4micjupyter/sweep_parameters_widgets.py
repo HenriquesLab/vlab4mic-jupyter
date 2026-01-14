@@ -353,10 +353,10 @@ def add_parameters_values(sweep_gen):
                                 ]
                         else:   
                             start, end = (
-                                sweep_parameter_gui[param_name].children[3].value
+                                sweep_parameter_gui[param_name].children[4].value
                             )
                             steps = (
-                                sweep_parameter_gui[param_name].children[4].value
+                                sweep_parameter_gui[param_name].children[5].value
                             )
                             param_values = (start, end, steps)
                     else:
@@ -949,6 +949,7 @@ def create_param_widgets(sweep_gen):
                     description="Range",
                     style={"description_width": "initial"},
                     layout=widgets.Layout(width="40%"),
+                    continuous_update=False,
                 )
                 # Use formatted parameter name for display
                 formatted_name = format_parameter_name(parameter_name)
@@ -970,7 +971,26 @@ def create_param_widgets(sweep_gen):
                     description="List of values (comma separated)",
                     style={"description_width": "initial"},
                 )
-                items = [name, check, check2, slider, steps_text, list_of_values]
+                feedback = widgets.HTML(
+                    value="",
+                    description="",
+                    style={"font_size": "12px"},
+                )
+                def calculate_values(slider, stepsize):
+                    current_max = slider[1]
+                    current_min = slider[0]
+                    step_size = stepsize
+                    n_steps = int(
+                        (current_max - current_min) / step_size
+                    ) + 1
+                    feedback.value = (
+                        f"Number of values with slider: {n_steps}"
+                    )
+                    display(feedback)
+                #slider.observe(calculate_values, names="value")
+                #steps_text.observe(calculate_values, names="value")
+                out = widgets.interactive_output(calculate_values, {'slider': slider, 'stepsize': steps_text})
+                items = [name, check, check2, slider, steps_text, out, list_of_values]
                 range_widgets[parameter_name] = widgets.VBox(items)
             elif settings["wtype"] == "logical":
                 # Use formatted parameter name for display
