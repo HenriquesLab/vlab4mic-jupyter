@@ -353,10 +353,10 @@ def add_parameters_values(sweep_gen):
                                 ]
                         else:   
                             start, end = (
-                                sweep_parameter_gui[param_name].children[4].value
+                                sweep_parameter_gui[param_name].children[3].value
                             )
                             steps = (
-                                sweep_parameter_gui[param_name].children[5].value
+                                sweep_parameter_gui[param_name].children[4].value
                             )
                             param_values = (start, end, steps)
                     else:
@@ -935,12 +935,12 @@ def create_param_widgets(sweep_gen):
                 if settings["wtype"] == "float_slider":
                     slidertype = "float"
                     steps_text = wgen.gen_bound_float(
-                        value=0.1, max=settings["range"][1], description="Step size"
+                        value=0.1, max=settings["range"][1], description="Step size", continuous_update=False,
                     )
                 else:
                     slidertype = "int"
                     steps_text = wgen.gen_bound_int(
-                        value=1, max=settings["range"][1], description="Step size"
+                        value=1, max=settings["range"][1], description="Step size", continuous_update=False,
                     )
                 slider = wgen.gen_range_slider(
                     slidertype=slidertype,
