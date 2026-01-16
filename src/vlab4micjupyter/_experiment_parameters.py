@@ -293,6 +293,8 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         probe_target_value = probes_gui["mock_type_options1"].value
         probe_target_value2 = probes_gui["mock_type_options2"].value
         probe_target_extra_option= probes_gui["text_options"].value 
+        use_Dol = probes_gui["use_Dol"].value
+        probe_Dol = probes_gui["probe_Dol"].value
         probe_fluorophore = probes_gui["fluorophore"].value
         save_new_fluorophore = probes_gui["create_fluorophore"].value
         if probe_fluorophore == "<Create new fluorophore>":
@@ -313,6 +315,10 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         else:
             probe_wobble_theta = None
 
+        if use_Dol:
+            probe_Dol = probe_Dol
+        else:
+            probe_Dol = None
         # Handle defect parameters
         defect_fraction = probes_gui["defect_fraction"].value
         defect_small_cluster = probes_gui["defect_small_cluster"].value
@@ -358,6 +364,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
                 probe_distance_to_epitope=probe_distance_to_epitope,
                 as_primary=as_linker,
                 probe_wobble_theta=probe_wobble_theta,
+                probe_Dol=probe_Dol,
                 probe_fluorophore=probe_fluorophore,
                 fluorophore_parameters=fluorophore_parameters,
             )
@@ -386,6 +393,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
                 probe_distance_to_epitope=probe_distance_to_epitope,
                 as_primary=as_linker,
                 probe_wobble_theta=probe_wobble_theta,
+                probe_Dol=probe_Dol,
                 probe_fluorophore=probe_fluorophore,
                 fluorophore_parameters=fluorophore_parameters,
             )
@@ -399,6 +407,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
                 probe_distance_to_epitope=probe_distance_to_epitope,
                 as_primary=as_linker,
                 probe_wobble_theta=probe_wobble_theta,
+                probe_Dol=probe_Dol,
                 probe_fluorophore=probe_fluorophore,
                 fluorophore_parameters=fluorophore_parameters,
             )
@@ -535,7 +544,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
     # change target type and value
     probes_gui.add_HTML(
         "target_selection_header",
-        "<hr> <b>Probe Target Selection</b>",
+        "<hr> <b>Epitope Definition</b>",
         style=dict(font_size="14px", color="darkblue"),
     )
     options_dictionary = dict(
@@ -627,6 +636,23 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         max=45,
         step=1,
         description="Wobble cone range (degrees)",
+    )
+    probes_gui.add_HTML(
+        "probe_conjugation_section_header",
+        "<hr> <b>Probe conjugation parameters</b>",
+        style=dict(font_size="14px", color="darkblue"),
+    )
+    probes_gui.add_checkbox(
+        tag="use_Dol",
+        description="Use Degree of Labelling (DOL) for probe conjugation",
+        value=False
+    )
+    probes_gui.add_bounded_int_text(
+        tag="probe_Dol",
+        description="Degree of labelling (DOL)",
+        vmin=0,
+        vmax=1000,
+        value=0
     )
     ## Fluorophore section
     # check for local configuration files for fluorophores
@@ -765,6 +791,16 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         ]
         probe_widgets_visibility["wobble_theta"] = (
             not probe_widgets_visibility["wobble_theta"]
+        )
+        # Probe conjugation visibility
+        probe_widgets_visibility["probe_conjugation_section_header"] = (
+            not probe_widgets_visibility["probe_conjugation_section_header"]
+        )
+        probe_widgets_visibility["use_Dol"] = (
+            not probe_widgets_visibility["use_Dol"]
+        )
+        probe_widgets_visibility["probe_Dol"] = (
+            not probe_widgets_visibility["probe_Dol"]
         )
         # Fluorophore parameters visibility
         probe_widgets_visibility["fluorophore_section_header"] = (
