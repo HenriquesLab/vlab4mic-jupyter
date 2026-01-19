@@ -268,16 +268,16 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
             probe_template=values["select_probe_template"].value,
         )
 
-        # Set defect parameters when using simple probe selection
-        defect_fraction = probes_gui["defect_fraction"].value
-        defect_small = probes_gui["defect_small_cluster"].value
-        defect_large = probes_gui["defect_large_cluster"].value
+        # Set incomplete_labelling parameters when using simple probe selection
+        incomplete_labelling_fraction = probes_gui["incomplete_labelling_fraction"].value
+        incomplete_labelling_small = probes_gui["incomplete_labelling_small_cluster"].value
+        incomplete_labelling_large = probes_gui["incomplete_labelling_large_cluster"].value
 
-        if defect_fraction > 0 and defect_small > 0 and defect_large > 0:
-            experiment.incomplete_labelling_eps["incomplete_labelling"] = float(defect_fraction)
-            experiment.incomplete_labelling_eps["eps1"] = float(defect_small)
-            experiment.incomplete_labelling_eps["eps2"] = float(defect_large)
-            experiment.incomplete_labelling_eps["use_defects"] = True
+        if incomplete_labelling_fraction > 0 and incomplete_labelling_small > 0 and incomplete_labelling_large > 0:
+            experiment.incomplete_labelling_eps["incomplete_labelling"] = float(incomplete_labelling_fraction)
+            experiment.incomplete_labelling_eps["eps1"] = float(incomplete_labelling_small)
+            experiment.incomplete_labelling_eps["eps2"] = float(incomplete_labelling_large)
+            experiment.incomplete_labelling_eps["use_incomplete_labelling"] = True
         else:
             experiment.incomplete_labelling_eps["incomplete_labelling"] = 0.0
             experiment.incomplete_labelling_eps["eps1"] = 100.0
@@ -323,20 +323,20 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
             probe_wobble_theta = probes_gui["wobble_theta"].value
         else:
             probe_wobble_theta = None
-        # Handle defect parameters
-        defect_fraction = probes_gui["defect_fraction"].value
-        defect_small_cluster = probes_gui["defect_small_cluster"].value
-        defect_large_cluster = probes_gui["defect_large_cluster"].value
+        # Handle incomplete_labelling parameters
+        incomplete_labelling_fraction = probes_gui["incomplete_labelling_fraction"].value
+        incomplete_labelling_small_cluster = probes_gui["incomplete_labelling_small_cluster"].value
+        incomplete_labelling_large_cluster = probes_gui["incomplete_labelling_large_cluster"].value
 
-        # Set defect parameters in experiment if all are provided and non-zero
+        # Set incomplete_labelling parameters in experiment if all are provided and non-zero
         if (
-            defect_fraction > 0
-            and defect_small_cluster > 0
-            and defect_large_cluster > 0
+            incomplete_labelling_fraction > 0
+            and incomplete_labelling_small_cluster > 0
+            and incomplete_labelling_large_cluster > 0
         ):
-            experiment.incomplete_labelling_eps["incomplete_labelling"] = float(defect_fraction)
-            experiment.incomplete_labelling_eps["eps1"] = float(defect_small_cluster)
-            experiment.incomplete_labelling_eps["eps2"] = float(defect_large_cluster)
+            experiment.incomplete_labelling_eps["incomplete_labelling"] = float(incomplete_labelling_fraction)
+            experiment.incomplete_labelling_eps["eps1"] = float(incomplete_labelling_small_cluster)
+            experiment.incomplete_labelling_eps["eps2"] = float(incomplete_labelling_large_cluster)
             experiment.incomplete_labelling_eps["use_incomplete_labelling"] = True
         else:
             experiment.incomplete_labelling_eps["incomplete_labelling"] = 0.0
@@ -487,11 +487,11 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
 
     def clear_probes(b):
         experiment.remove_probes()
-        # Clear defect parameters when clearing probes
-        experiment.incomplete_labelling_eps["defect"] = 0.0
+        # Clear incomplete_labelling parameters when clearing probes
+        experiment.incomplete_labelling_eps["incomplete_labelling"] = 0.0
         experiment.incomplete_labelling_eps["eps1"] = 20.0
         experiment.incomplete_labelling_eps["eps2"] = 100.0
-        experiment.incomplete_labelling_eps["use_defects"] = False
+        experiment.incomplete_labelling_eps["use_incomplete_labelling"] = False
         probes_gui["message1"].value = "No probes selected yet."
         probes_gui["message2"].value = "No labelled structure created yet."
         probes_gui["add_probe"].disabled = False
@@ -716,20 +716,20 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         description="Save new fluorophore in local configuration",
         value=False,
     )
-    # Defect parameters section
+    # incomplete_labelling parameters section
     probes_gui.add_HTML(
-        "defects_section_header",
-        "<hr> <b>Structural Defect Parameters</b>",
+        "incomplete_labelling_section_header",
+        "<hr> <b>Incomplete Labelling Parameters</b>",
         style=dict(font_size="14px", color="darkblue"),
     )
     probes_gui.add_HTML(
-        "defects_info",
-        "Model structural defects in the macromolecular complex. All three parameters must be set to enable defects.",
+        "incomplete_labelling_info",
+        "Model Incomplete Labelling in the macromolecular complex. All three parameters must be set to enable this feature.",
         style=dict(font_size="12px", color="gray"),
     )
     probes_gui.add_float_slider(
-        "defect_fraction",
-        description="Defect fraction (0-1)",
+        "incomplete_labelling_fraction",
+        description="Incomplete Labelling fraction (0-1)",
         min=0.0,
         max=1.0,
         value=0.0,
@@ -738,14 +738,14 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         style={"description_width": "initial"},
     )
     probes_gui.add_float_text(
-        "defect_small_cluster",
+        "incomplete_labelling_small_cluster",
         description="Small cluster distance (Å)",
         value=100.0,
         continuous_update=False,
         style={"description_width": "initial"},
     )
     probes_gui.add_float_text(
-        "defect_large_cluster",
+        "incomplete_labelling_large_cluster",
         description="Large cluster distance (Å)",
         value=200.0,
         continuous_update=False,
@@ -834,21 +834,21 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         probe_widgets_visibility["create_fluorophore"] = (
             not probe_widgets_visibility["create_fluorophore"]
         )
-        # Defect parameters visibility
-        probe_widgets_visibility["defects_section_header"] = (
-            not probe_widgets_visibility["defects_section_header"]
+        # incomplete_labelling parameters visibility
+        probe_widgets_visibility["incomplete_labelling_section_header"] = (
+            not probe_widgets_visibility["incomplete_labelling_section_header"]
         )
-        probe_widgets_visibility["defects_info"] = (
-            not probe_widgets_visibility["defects_info"]
+        probe_widgets_visibility["incomplete_labelling_info"] = (
+            not probe_widgets_visibility["incomplete_labelling_info"]
         )
-        probe_widgets_visibility["defect_fraction"] = (
-            not probe_widgets_visibility["defect_fraction"]
+        probe_widgets_visibility["incomplete_labelling_fraction"] = (
+            not probe_widgets_visibility["incomplete_labelling_fraction"]
         )
-        probe_widgets_visibility["defect_small_cluster"] = (
-            not probe_widgets_visibility["defect_small_cluster"]
+        probe_widgets_visibility["incomplete_labelling_small_cluster"] = (
+            not probe_widgets_visibility["incomplete_labelling_small_cluster"]
         )
-        probe_widgets_visibility["defect_large_cluster"] = (
-            not probe_widgets_visibility["defect_large_cluster"]
+        probe_widgets_visibility["incomplete_labelling_large_cluster"] = (
+            not probe_widgets_visibility["incomplete_labelling_large_cluster"]
         )
         probe_widgets_visibility["add_custom_probe"] = (
             not probe_widgets_visibility["add_custom_probe"]

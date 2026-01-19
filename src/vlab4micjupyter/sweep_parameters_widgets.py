@@ -63,20 +63,20 @@ def format_parameter_name(param_name):
     Parameters
     ----------
     param_name : str
-        Parameter name with underscores (e.g., 'defect_small_cluster')
+        Parameter name with underscores (e.g., 'incomplete_labelling_small_cluster')
 
     Returns
     -------
     str
-        Formatted name in natural language (e.g., 'Defect Small Cluster')
+        Formatted name in natural language (e.g., 'Incomplete Labelling Small Cluster')
     """
     # Handle specific parameter name mappings
     name_mappings = {
         "labelling_efficiency": "Labeling Efficiency",
         "probe_distance_to_epitope": "Probe Distance to Epitope",
-        "defect_fraction": "Defect Fraction",
-        "defect_small_cluster": "Defect Small Cluster",
-        "defect_large_cluster": "Defect Large Cluster",
+        "incomplete_labelling_fraction": "Incomplete Labelling Fraction",
+        "incomplete_labelling_small_cluster": "Incomplete Labelling Small Cluster",
+        "incomplete_labelling_large_cluster": "Incomplete Labelling Large Cluster",
         "random_orientations": "Random Orientations",
         "number_of_particles": "Number of Particles",
         "exp_time": "Exposure Time",
@@ -676,12 +676,12 @@ def analyse_sweep(sweep_gen):
             analysis_widget["probe_parameters"].disabled = False
         else:
             analysis_widget["probe_parameters"].disabled = True
-        if sweep_gen.defect_parameters is not None and flag:
-            n_defect_parameters = len(sweep_gen.defect_parameters.keys())
-            analysis_widget["defect_parameters"].max = n_defect_parameters - 1
-            analysis_widget["defect_parameters"].disabled = False
+        if sweep_gen.incomplete_labelling_parameters is not None and flag:
+            n_incomplete_labelling_parameters = len(sweep_gen.incomplete_labelling_parameters.keys())
+            analysis_widget["incomplete_labelling_parameters"].max = n_incomplete_labelling_parameters - 1
+            analysis_widget["incomplete_labelling_parameters"].disabled = False
         else:
-            analysis_widget["defect_parameters"].disabled = True
+            analysis_widget["incomplete_labelling_parameters"].disabled = True
         if sweep_gen.vsample_parameters is not None and flag:
             n_vsample_parameters = len(sweep_gen.vsample_parameters.keys())
             analysis_widget["vsample_parameters"].max = n_vsample_parameters - 1
@@ -754,7 +754,7 @@ def analyse_sweep(sweep_gen):
         modality_template = analysis_widget["modality_template"].value
         probe_template = analysis_widget["probe_template"].value
         probe_parameters = analysis_widget["probe_parameters"].value
-        defect_parameters = analysis_widget["defect_parameters"].value
+        incomplete_labelling_parameters = analysis_widget["incomplete_labelling_parameters"].value
         vsample_parameters = analysis_widget["vsample_parameters"].value
         acquisition_parameters = analysis_widget[
             "acquisition_parameters"
@@ -765,7 +765,7 @@ def analyse_sweep(sweep_gen):
             modality_template=modality_template,
             probe_template=probe_template,
             probe_parameters=probe_parameters,
-            defect_parameters=defect_parameters,
+            incomplete_labelling_parameters=incomplete_labelling_parameters,
             virtual_sample_parameters=vsample_parameters,
             acquisition_parameters=acquisition_parameters,
             replica_number=replica_number,
@@ -783,7 +783,7 @@ def analyse_sweep(sweep_gen):
         text += "Modality: " + str(parameters[5])+ "<br>"
         text += "Probe: " + str(parameters[1])+ "<br>"
         text += "Probe Parameters: " + str(parameters[2])+ "<br>"
-        text += "Defect Parameters: " + str(parameters[3])+ "<br>"
+        text += "Incomplete Labelling Parameters: " + str(parameters[3])+ "<br>"
         text += "Virtual Sample Parameters: " + str(parameters[4])+ "<br>"
         text += "Modality Parameters: " + str(parameters[6])+ "<br>"
         text += "Acquisition Parameters: " + str(parameters[7])+ "<br>"
@@ -805,8 +805,8 @@ def analyse_sweep(sweep_gen):
         widgets_visibility["probe_parameters"] = not widgets_visibility[
             "probe_parameters"
         ]
-        widgets_visibility["defect_parameters"] = not widgets_visibility[
-            "defect_parameters"
+        widgets_visibility["incomplete_labelling_parameters"] = not widgets_visibility[
+            "incomplete_labelling_parameters"
         ]
         widgets_visibility["vsample_parameters"] = not widgets_visibility[
             "vsample_parameters"
@@ -856,8 +856,8 @@ def analyse_sweep(sweep_gen):
         continuous_update=False,
     )
     analysis_widget.add_int_slider(
-        "defect_parameters",
-        description="Defect parameter",
+        "incomplete_labelling_parameters",
+        description="Incomplete Labelling parameter",
         min=0,
         max=1,
         value=0,
@@ -891,7 +891,7 @@ def analyse_sweep(sweep_gen):
     analysis_widget["modality_template"].observe(update_plot, names="value")
     analysis_widget["probe_template"].observe(update_plot, names="value")
     analysis_widget["probe_parameters"].observe(update_plot, names="value")
-    analysis_widget["defect_parameters"].observe(update_plot, names="value")
+    analysis_widget["incomplete_labelling_parameters"].observe(update_plot, names="value")
     analysis_widget["vsample_parameters"].observe(update_plot, names="value")
     analysis_widget["acquisition_parameters"].observe(
         update_plot, names="value"
@@ -918,7 +918,7 @@ def analyse_sweep(sweep_gen):
     widgets_visibility["modality_template"] = False
     widgets_visibility["probe_template"] = False
     widgets_visibility["probe_parameters"] = False
-    widgets_visibility["defect_parameters"] = False
+    widgets_visibility["incomplete_labelling_parameters"] = False
     widgets_visibility["vsample_parameters"] = False
     widgets_visibility["acquisition_parameters"] = False
     widgets_visibility["replica_number"] = False
