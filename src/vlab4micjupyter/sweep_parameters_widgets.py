@@ -436,7 +436,18 @@ def set_reference(sweep_gen):
             ax.imshow(image)
             plt.close()
             display(fig)
-
+    
+    reference.add_HTML(
+        tag="Select_ref_header",
+        value="<b>Set up reference parameters</b>",
+        style={"font_size": "20px"},
+    )
+    reference.add_HTML(
+        tag="General_info_message",
+        value="Generate a reference image based on the structure, probe and reference modality specified. <br>"
+        "<b>Note</b>: You can save the generated image after the analysis. In the advanced parameter section, you can upload a previously generated reference, or use your own reference image.",
+        style={"font_size": "12px"},
+    )
     reference.add_dropdown(
         "structure",
         options=sweep_gen.structures,
@@ -469,6 +480,12 @@ def set_reference(sweep_gen):
         tag="Upload_ref_message",
         value="<b>Upload image for reference</b>",
         style={"font_size": "15px"},
+    )
+    reference.add_HTML(
+        tag="Upload_ref_info_message",
+        value="Upload an image to be used as a reference for analysis. " \
+        "Besides the image, a binary mask can be provided, so that the analysis will only consider the pixels within the mask. Otherwise, the entire image will be used.",
+        style={"font_size": "12px"},
     )
     reference.add_HTML(
         tag="File_message",
@@ -508,6 +525,9 @@ def set_reference(sweep_gen):
     )
 
     def toggle_advanced_parameters(b):
+        ref_widgets_visibility["Upload_ref_info_message"] = (
+            not ref_widgets_visibility["Upload_ref_info_message"]
+        )
         ref_widgets_visibility["Upload_ref_message"] = (
             not ref_widgets_visibility["Upload_ref_message"]
         )
