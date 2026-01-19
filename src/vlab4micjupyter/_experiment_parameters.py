@@ -274,15 +274,15 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         defect_large = probes_gui["defect_large_cluster"].value
 
         if defect_fraction > 0 and defect_small > 0 and defect_large > 0:
-            experiment.defect_eps["defect"] = float(defect_fraction)
-            experiment.defect_eps["eps1"] = float(defect_small)
-            experiment.defect_eps["eps2"] = float(defect_large)
-            experiment.defect_eps["use_defects"] = True
+            experiment.incomplete_labelling_eps["incomplete_labelling"] = float(defect_fraction)
+            experiment.incomplete_labelling_eps["eps1"] = float(defect_small)
+            experiment.incomplete_labelling_eps["eps2"] = float(defect_large)
+            experiment.incomplete_labelling_eps["use_defects"] = True
         else:
-            experiment.defect_eps["defect"] = 0.0
-            experiment.defect_eps["eps1"] = 100.0
-            experiment.defect_eps["eps2"] = 200.0
-            experiment.defect_eps["use_defects"] = False
+            experiment.incomplete_labelling_eps["incomplete_labelling"] = 0.0
+            experiment.incomplete_labelling_eps["eps1"] = 100.0
+            experiment.incomplete_labelling_eps["eps2"] = 200.0
+            experiment.incomplete_labelling_eps["use_incomplete_labelling"] = False
 
         probes_gui["create_particle"].disabled = False
         update_probe_list()
@@ -334,15 +334,15 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
             and defect_small_cluster > 0
             and defect_large_cluster > 0
         ):
-            experiment.defect_eps["defect"] = float(defect_fraction)
-            experiment.defect_eps["eps1"] = float(defect_small_cluster)
-            experiment.defect_eps["eps2"] = float(defect_large_cluster)
-            experiment.defect_eps["use_defects"] = True
+            experiment.incomplete_labelling_eps["incomplete_labelling"] = float(defect_fraction)
+            experiment.incomplete_labelling_eps["eps1"] = float(defect_small_cluster)
+            experiment.incomplete_labelling_eps["eps2"] = float(defect_large_cluster)
+            experiment.incomplete_labelling_eps["use_incomplete_labelling"] = True
         else:
-            experiment.defect_eps["defect"] = 0.0
-            experiment.defect_eps["eps1"] = 100.0
-            experiment.defect_eps["eps2"] = 200.0
-            experiment.defect_eps["use_defects"] = False
+            experiment.incomplete_labelling_eps["incomplete_labelling"] = 0.0
+            experiment.incomplete_labelling_eps["eps1"] = 100.0
+            experiment.incomplete_labelling_eps["eps2"] = 200.0
+            experiment.incomplete_labelling_eps["use_incomplete_labelling"] = False
 
         if as_linker:
             options_per_type1["Primary_Probe"] = [
@@ -488,10 +488,10 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
     def clear_probes(b):
         experiment.remove_probes()
         # Clear defect parameters when clearing probes
-        experiment.defect_eps["defect"] = 0.0
-        experiment.defect_eps["eps1"] = 20.0
-        experiment.defect_eps["eps2"] = 100.0
-        experiment.defect_eps["use_defects"] = False
+        experiment.incomplete_labelling_eps["defect"] = 0.0
+        experiment.incomplete_labelling_eps["eps1"] = 20.0
+        experiment.incomplete_labelling_eps["eps2"] = 100.0
+        experiment.incomplete_labelling_eps["use_defects"] = False
         probes_gui["message1"].value = "No probes selected yet."
         probes_gui["message2"].value = "No labelled structure created yet."
         probes_gui["add_probe"].disabled = False
