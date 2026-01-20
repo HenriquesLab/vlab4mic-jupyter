@@ -163,6 +163,9 @@ def select_structure(sweep_gen):
                 ez_sweep_structure["structures"].value
             ],
         ]
+        sweep_gen.set_reference_parameters(
+            reference_structure=sweep_gen.structures[0]
+        )
         ez_sweep_structure["structures"].disabled = True
     
     def select_structure_from_file(b):
