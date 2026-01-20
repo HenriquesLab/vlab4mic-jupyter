@@ -244,6 +244,8 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
     probes_gui = EZInput(title="Labels")
     visibility_widgets = dict()
     probe_options = []
+    probe_template_names = []
+    probe_template_names.append("Empty probe template")
     if (
         experiment.structure_id
         in experiment.config_probe_per_structure_names.keys()
@@ -258,6 +260,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
             probe_options.append(probe_name)
     for probe_name in experiment.config_probe_models_names:
         probe_options.append(probe_name)
+        probe_template_names.append(probe_name)
 
     # methods
     def select_probe(values):
@@ -265,27 +268,31 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
             probe_template=values["select_probe_template"].value,
         )
 
-        # Set defect parameters when using simple probe selection
-        defect_fraction = probes_gui["defect_fraction"].value
-        defect_small = probes_gui["defect_small_cluster"].value
-        defect_large = probes_gui["defect_large_cluster"].value
+        # Set structural_integrity parameters when using simple probe selection
+        structural_integrity_fraction = probes_gui["structural_integrity_fraction"].value
+        structural_integrity_small = probes_gui["structural_integrity_small_cluster"].value
+        structural_integrity_large = probes_gui["structural_integrity_large_cluster"].value
 
-        if defect_fraction > 0 and defect_small > 0 and defect_large > 0:
-            experiment.defect_eps["defect"] = float(defect_fraction)
-            experiment.defect_eps["eps1"] = float(defect_small)
-            experiment.defect_eps["eps2"] = float(defect_large)
-            experiment.defect_eps["use_defects"] = True
+        if structural_integrity_fraction >= 0 and structural_integrity_small > 0 and structural_integrity_large > 0:
+            experiment.structural_integrity_eps["structural_integrity"] = float(structural_integrity_fraction)
+            experiment.structural_integrity_eps["eps1"] = float(structural_integrity_small)
+            experiment.structural_integrity_eps["eps2"] = float(structural_integrity_large)
+            experiment.structural_integrity_eps["use_structural_integrity"] = True
         else:
-            experiment.defect_eps["defect"] = 0.0
-            experiment.defect_eps["eps1"] = 100.0
-            experiment.defect_eps["eps2"] = 200.0
-            experiment.defect_eps["use_defects"] = False
+            experiment.structural_integrity_eps["structural_integrity"] = 0.0
+            experiment.structural_integrity_eps["eps1"] = 100.0
+            experiment.structural_integrity_eps["eps2"] = 200.0
+            experiment.structural_integrity_eps["use_structural_integrity"] = False
 
         probes_gui["create_particle"].disabled = False
         update_probe_list()
 
     def select_custom_probe(b):
-        probe_template = "NHS_ester"
+        #probe_template = probes_gui["select_probe_template"].value
+        if probes_gui["select_custom_probe_template"].value == "Empty probe template":
+            probe_template = "NHS_ester" # minimal template 
+        else:
+            probe_template = probes_gui["select_custom_probe_template"].value
         probe_name = probes_gui["probe_name"].value
         labelling_efficiency = probes_gui["labelling_efficiency"].value
         probe_distance_to_epitope = probes_gui["distance_from_epitope"].value
@@ -293,6 +300,10 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         probe_target_value = probes_gui["mock_type_options1"].value
         probe_target_value2 = probes_gui["mock_type_options2"].value
         probe_target_extra_option= probes_gui["text_options"].value 
+        if probes_gui["use_DoL"].value:
+            probe_DoL = probes_gui["probe_DoL"].value
+        else:
+            probe_DoL = None
         probe_fluorophore = probes_gui["fluorophore"].value
         save_new_fluorophore = probes_gui["create_fluorophore"].value
         if probe_fluorophore == "<Create new fluorophore>":
@@ -312,27 +323,26 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
             probe_wobble_theta = probes_gui["wobble_theta"].value
         else:
             probe_wobble_theta = None
+        # Handle structural_integrity parameters
+        structural_integrity_fraction = probes_gui["structural_integrity_fraction"].value
+        structural_integrity_small_cluster = probes_gui["structural_integrity_small_cluster"].value
+        structural_integrity_large_cluster = probes_gui["structural_integrity_large_cluster"].value
 
-        # Handle defect parameters
-        defect_fraction = probes_gui["defect_fraction"].value
-        defect_small_cluster = probes_gui["defect_small_cluster"].value
-        defect_large_cluster = probes_gui["defect_large_cluster"].value
-
-        # Set defect parameters in experiment if all are provided and non-zero
+        # Set structural_integrity parameters in experiment if all are provided and non-zero
         if (
-            defect_fraction > 0
-            and defect_small_cluster > 0
-            and defect_large_cluster > 0
+            structural_integrity_fraction >= 0
+            and structural_integrity_small_cluster > 0
+            and structural_integrity_large_cluster > 0
         ):
-            experiment.defect_eps["defect"] = float(defect_fraction)
-            experiment.defect_eps["eps1"] = float(defect_small_cluster)
-            experiment.defect_eps["eps2"] = float(defect_large_cluster)
-            experiment.defect_eps["use_defects"] = True
+            experiment.structural_integrity_eps["structural_integrity"] = float(structural_integrity_fraction)
+            experiment.structural_integrity_eps["eps1"] = float(structural_integrity_small_cluster)
+            experiment.structural_integrity_eps["eps2"] = float(structural_integrity_large_cluster)
+            experiment.structural_integrity_eps["use_structural_integrity"] = True
         else:
-            experiment.defect_eps["defect"] = 0.0
-            experiment.defect_eps["eps1"] = 100.0
-            experiment.defect_eps["eps2"] = 200.0
-            experiment.defect_eps["use_defects"] = False
+            experiment.structural_integrity_eps["structural_integrity"] = 0.0
+            experiment.structural_integrity_eps["eps1"] = 100.0
+            experiment.structural_integrity_eps["eps2"] = 200.0
+            experiment.structural_integrity_eps["use_structural_integrity"] = False
 
         if as_linker:
             options_per_type1["Primary_Probe"] = [
@@ -358,6 +368,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
                 probe_distance_to_epitope=probe_distance_to_epitope,
                 as_primary=as_linker,
                 probe_wobble_theta=probe_wobble_theta,
+                probe_DoL=probe_DoL,
                 probe_fluorophore=probe_fluorophore,
                 fluorophore_parameters=fluorophore_parameters,
             )
@@ -386,6 +397,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
                 probe_distance_to_epitope=probe_distance_to_epitope,
                 as_primary=as_linker,
                 probe_wobble_theta=probe_wobble_theta,
+                probe_DoL=probe_DoL,
                 probe_fluorophore=probe_fluorophore,
                 fluorophore_parameters=fluorophore_parameters,
             )
@@ -399,6 +411,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
                 probe_distance_to_epitope=probe_distance_to_epitope,
                 as_primary=as_linker,
                 probe_wobble_theta=probe_wobble_theta,
+                probe_DoL=probe_DoL,
                 probe_fluorophore=probe_fluorophore,
                 fluorophore_parameters=fluorophore_parameters,
             )
@@ -474,11 +487,11 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
 
     def clear_probes(b):
         experiment.remove_probes()
-        # Clear defect parameters when clearing probes
-        experiment.defect_eps["defect"] = 0.0
-        experiment.defect_eps["eps1"] = 20.0
-        experiment.defect_eps["eps2"] = 100.0
-        experiment.defect_eps["use_defects"] = False
+        # Clear structural_integrity parameters when clearing probes
+        experiment.structural_integrity_eps["structural_integrity"] = 0.0
+        experiment.structural_integrity_eps["eps1"] = 20.0
+        experiment.structural_integrity_eps["eps2"] = 100.0
+        experiment.structural_integrity_eps["use_structural_integrity"] = False
         probes_gui["message1"].value = "No probes selected yet."
         probes_gui["message2"].value = "No labelled structure created yet."
         probes_gui["add_probe"].disabled = False
@@ -509,6 +522,11 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         "<b>Advanced parameters</b> <hr> ",
         style=dict(font_size="15px"),
     )
+    probes_gui.add_dropdown(
+        tag="select_custom_probe_template",
+        description="Choose a probe template:",
+        options=probe_template_names,
+    )
     probes_gui.add_text(
         tag="probe_name",
         value="Custom_Probe",
@@ -535,7 +553,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
     # change target type and value
     probes_gui.add_HTML(
         "target_selection_header",
-        "<hr> <b>Probe Target Selection</b>",
+        "<hr> <b>Epitope Definition</b>",
         style=dict(font_size="14px", color="darkblue"),
     )
     options_dictionary = dict(
@@ -628,6 +646,23 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         step=1,
         description="Wobble cone range (degrees)",
     )
+    probes_gui.add_HTML(
+        "probe_conjugation_section_header",
+        "<hr> <b>Probe conjugation parameters</b>",
+        style=dict(font_size="14px", color="darkblue"),
+    )
+    probes_gui.add_checkbox(
+        tag="use_DoL",
+        description="Use Degree of Labelling (DOL) for probe conjugation",
+        value=False
+    )
+    probes_gui.add_bounded_int_text(
+        tag="probe_DoL",
+        description="Degree of labelling (DOL)",
+        vmin=0,
+        vmax=1000,
+        value=0
+    )
     ## Fluorophore section
     # check for local configuration files for fluorophores
     probes_gui.add_HTML(
@@ -681,36 +716,36 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         description="Save new fluorophore in local configuration",
         value=False,
     )
-    # Defect parameters section
+    # structural_integrity parameters section
     probes_gui.add_HTML(
-        "defects_section_header",
-        "<hr> <b>Structural Defect Parameters</b>",
+        "structural_integrity_section_header",
+        "<hr> <b>Structural Integrity Parameters</b>",
         style=dict(font_size="14px", color="darkblue"),
     )
     probes_gui.add_HTML(
-        "defects_info",
-        "Model structural defects in the macromolecular complex. All three parameters must be set to enable defects.",
+        "structural_integrity_info",
+        "Model Structural Integrity in the macromolecular complex. All three parameters must be set to enable this feature.",
         style=dict(font_size="12px", color="gray"),
     )
     probes_gui.add_float_slider(
-        "defect_fraction",
-        description="Defect fraction (0-1)",
+        "structural_integrity_fraction",
+        description="Structural Integrity fraction (0-1)",
         min=0.0,
         max=1.0,
-        value=0.0,
+        value=1.0,
         step=0.001,
         continuous_update=False,
         style={"description_width": "initial"},
     )
     probes_gui.add_float_text(
-        "defect_small_cluster",
+        "structural_integrity_small_cluster",
         description="Small cluster distance (Å)",
         value=100.0,
         continuous_update=False,
         style={"description_width": "initial"},
     )
     probes_gui.add_float_text(
-        "defect_large_cluster",
+        "structural_integrity_large_cluster",
         description="Large cluster distance (Å)",
         value=200.0,
         continuous_update=False,
@@ -728,6 +763,10 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
     def toggle_advanced_parameters(b):
         probe_widgets_visibility["advanced_param_header"] = (
             not probe_widgets_visibility["advanced_param_header"]
+        )
+        # Probe template selection visibility
+        probe_widgets_visibility["select_custom_probe_template"] = (
+            not probe_widgets_visibility["select_custom_probe_template"]
         )
         probe_widgets_visibility["probe_name"] = not probe_widgets_visibility[
             "probe_name"
@@ -766,6 +805,16 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         probe_widgets_visibility["wobble_theta"] = (
             not probe_widgets_visibility["wobble_theta"]
         )
+        # Probe conjugation visibility
+        probe_widgets_visibility["probe_conjugation_section_header"] = (
+            not probe_widgets_visibility["probe_conjugation_section_header"]
+        )
+        probe_widgets_visibility["use_DoL"] = (
+            not probe_widgets_visibility["use_DoL"]
+        )
+        probe_widgets_visibility["probe_DoL"] = (
+            not probe_widgets_visibility["probe_DoL"]
+        )
         # Fluorophore parameters visibility
         probe_widgets_visibility["fluorophore_section_header"] = (
             not probe_widgets_visibility["fluorophore_section_header"]
@@ -785,21 +834,21 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         probe_widgets_visibility["create_fluorophore"] = (
             not probe_widgets_visibility["create_fluorophore"]
         )
-        # Defect parameters visibility
-        probe_widgets_visibility["defects_section_header"] = (
-            not probe_widgets_visibility["defects_section_header"]
+        # structural_integrity parameters visibility
+        probe_widgets_visibility["structural_integrity_section_header"] = (
+            not probe_widgets_visibility["structural_integrity_section_header"]
         )
-        probe_widgets_visibility["defects_info"] = (
-            not probe_widgets_visibility["defects_info"]
+        probe_widgets_visibility["structural_integrity_info"] = (
+            not probe_widgets_visibility["structural_integrity_info"]
         )
-        probe_widgets_visibility["defect_fraction"] = (
-            not probe_widgets_visibility["defect_fraction"]
+        probe_widgets_visibility["structural_integrity_fraction"] = (
+            not probe_widgets_visibility["structural_integrity_fraction"]
         )
-        probe_widgets_visibility["defect_small_cluster"] = (
-            not probe_widgets_visibility["defect_small_cluster"]
+        probe_widgets_visibility["structural_integrity_small_cluster"] = (
+            not probe_widgets_visibility["structural_integrity_small_cluster"]
         )
-        probe_widgets_visibility["defect_large_cluster"] = (
-            not probe_widgets_visibility["defect_large_cluster"]
+        probe_widgets_visibility["structural_integrity_large_cluster"] = (
+            not probe_widgets_visibility["structural_integrity_large_cluster"]
         )
         probe_widgets_visibility["add_custom_probe"] = (
             not probe_widgets_visibility["add_custom_probe"]

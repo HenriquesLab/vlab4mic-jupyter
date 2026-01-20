@@ -63,20 +63,20 @@ def format_parameter_name(param_name):
     Parameters
     ----------
     param_name : str
-        Parameter name with underscores (e.g., 'defect_small_cluster')
+        Parameter name with underscores (e.g., 'structural_integrity_small_cluster')
 
     Returns
     -------
     str
-        Formatted name in natural language (e.g., 'Defect Small Cluster')
+        Formatted name in natural language (e.g., 'Structural Integrity Small Cluster')
     """
     # Handle specific parameter name mappings
     name_mappings = {
         "labelling_efficiency": "Labeling Efficiency",
         "probe_distance_to_epitope": "Probe Distance to Epitope",
-        "defect_fraction": "Defect Fraction",
-        "defect_small_cluster": "Defect Small Cluster",
-        "defect_large_cluster": "Defect Large Cluster",
+        "structural_integrity_fraction": "Structural Integrity Fraction",
+        "structural_integrity_small_cluster": "Structural Integrity Small Cluster",
+        "structural_integrity_large_cluster": "Structural Integrity Large Cluster",
         "random_orientations": "Random Orientations",
         "number_of_particles": "Number of Particles",
         "exp_time": "Exposure Time",
@@ -163,6 +163,9 @@ def select_structure(sweep_gen):
                 ez_sweep_structure["structures"].value
             ],
         ]
+        sweep_gen.set_reference_parameters(
+            reference_structure=sweep_gen.structures[0]
+        )
         ez_sweep_structure["structures"].disabled = True
     
     def select_structure_from_file(b):
@@ -436,7 +439,18 @@ def set_reference(sweep_gen):
             ax.imshow(image)
             plt.close()
             display(fig)
-
+    
+    reference.add_HTML(
+        tag="Select_ref_header",
+        value="<b>Set up reference parameters</b>",
+        style={"font_size": "20px"},
+    )
+    reference.add_HTML(
+        tag="General_info_message",
+        value="Generate a reference image based on the structure, probe and reference modality specified. <br>"
+        "<b>Note</b>: You can save the generated image after the analysis. In the advanced parameter section, you can upload a previously generated reference, or use your own reference image.",
+        style={"font_size": "12px"},
+    )
     reference.add_dropdown(
         "structure",
         options=sweep_gen.structures,
@@ -469,6 +483,12 @@ def set_reference(sweep_gen):
         tag="Upload_ref_message",
         value="<b>Upload image for reference</b>",
         style={"font_size": "15px"},
+    )
+    reference.add_HTML(
+        tag="Upload_ref_info_message",
+        value="Upload an image to be used as a reference for analysis. " \
+        "Besides the image, a binary mask can be provided, so that the analysis will only consider the pixels within the mask. Otherwise, the entire image will be used.",
+        style={"font_size": "12px"},
     )
     reference.add_HTML(
         tag="File_message",
@@ -508,6 +528,9 @@ def set_reference(sweep_gen):
     )
 
     def toggle_advanced_parameters(b):
+        ref_widgets_visibility["Upload_ref_info_message"] = (
+            not ref_widgets_visibility["Upload_ref_info_message"]
+        )
         ref_widgets_visibility["Upload_ref_message"] = (
             not ref_widgets_visibility["Upload_ref_message"]
         )
@@ -656,12 +679,12 @@ def analyse_sweep(sweep_gen):
             analysis_widget["probe_parameters"].disabled = False
         else:
             analysis_widget["probe_parameters"].disabled = True
-        if sweep_gen.defect_parameters is not None and flag:
-            n_defect_parameters = len(sweep_gen.defect_parameters.keys())
-            analysis_widget["defect_parameters"].max = n_defect_parameters - 1
-            analysis_widget["defect_parameters"].disabled = False
+        if sweep_gen.structural_integrity_parameters is not None and flag:
+            n_structural_integrity_parameters = len(sweep_gen.structural_integrity_parameters.keys())
+            analysis_widget["structural_integrity_parameters"].max = n_structural_integrity_parameters - 1
+            analysis_widget["structural_integrity_parameters"].disabled = False
         else:
-            analysis_widget["defect_parameters"].disabled = True
+            analysis_widget["structural_integrity_parameters"].disabled = True
         if sweep_gen.vsample_parameters is not None and flag:
             n_vsample_parameters = len(sweep_gen.vsample_parameters.keys())
             analysis_widget["vsample_parameters"].max = n_vsample_parameters - 1
@@ -734,7 +757,7 @@ def analyse_sweep(sweep_gen):
         modality_template = analysis_widget["modality_template"].value
         probe_template = analysis_widget["probe_template"].value
         probe_parameters = analysis_widget["probe_parameters"].value
-        defect_parameters = analysis_widget["defect_parameters"].value
+        structural_integrity_parameters = analysis_widget["structural_integrity_parameters"].value
         vsample_parameters = analysis_widget["vsample_parameters"].value
         acquisition_parameters = analysis_widget[
             "acquisition_parameters"
@@ -745,7 +768,7 @@ def analyse_sweep(sweep_gen):
             modality_template=modality_template,
             probe_template=probe_template,
             probe_parameters=probe_parameters,
-            defect_parameters=defect_parameters,
+            structural_integrity_parameters=structural_integrity_parameters,
             virtual_sample_parameters=vsample_parameters,
             acquisition_parameters=acquisition_parameters,
             replica_number=replica_number,
@@ -763,7 +786,7 @@ def analyse_sweep(sweep_gen):
         text += "Modality: " + str(parameters[5])+ "<br>"
         text += "Probe: " + str(parameters[1])+ "<br>"
         text += "Probe Parameters: " + str(parameters[2])+ "<br>"
-        text += "Defect Parameters: " + str(parameters[3])+ "<br>"
+        text += "Structural Integrity Parameters: " + str(parameters[3])+ "<br>"
         text += "Virtual Sample Parameters: " + str(parameters[4])+ "<br>"
         text += "Modality Parameters: " + str(parameters[6])+ "<br>"
         text += "Acquisition Parameters: " + str(parameters[7])+ "<br>"
@@ -785,8 +808,8 @@ def analyse_sweep(sweep_gen):
         widgets_visibility["probe_parameters"] = not widgets_visibility[
             "probe_parameters"
         ]
-        widgets_visibility["defect_parameters"] = not widgets_visibility[
-            "defect_parameters"
+        widgets_visibility["structural_integrity_parameters"] = not widgets_visibility[
+            "structural_integrity_parameters"
         ]
         widgets_visibility["vsample_parameters"] = not widgets_visibility[
             "vsample_parameters"
@@ -836,8 +859,8 @@ def analyse_sweep(sweep_gen):
         continuous_update=False,
     )
     analysis_widget.add_int_slider(
-        "defect_parameters",
-        description="Defect parameter",
+        "structural_integrity_parameters",
+        description="Structural Integrity parameter",
         min=0,
         max=1,
         value=0,
@@ -871,7 +894,7 @@ def analyse_sweep(sweep_gen):
     analysis_widget["modality_template"].observe(update_plot, names="value")
     analysis_widget["probe_template"].observe(update_plot, names="value")
     analysis_widget["probe_parameters"].observe(update_plot, names="value")
-    analysis_widget["defect_parameters"].observe(update_plot, names="value")
+    analysis_widget["structural_integrity_parameters"].observe(update_plot, names="value")
     analysis_widget["vsample_parameters"].observe(update_plot, names="value")
     analysis_widget["acquisition_parameters"].observe(
         update_plot, names="value"
@@ -898,7 +921,7 @@ def analyse_sweep(sweep_gen):
     widgets_visibility["modality_template"] = False
     widgets_visibility["probe_template"] = False
     widgets_visibility["probe_parameters"] = False
-    widgets_visibility["defect_parameters"] = False
+    widgets_visibility["structural_integrity_parameters"] = False
     widgets_visibility["vsample_parameters"] = False
     widgets_visibility["acquisition_parameters"] = False
     widgets_visibility["replica_number"] = False
