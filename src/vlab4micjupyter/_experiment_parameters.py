@@ -268,21 +268,21 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
             probe_template=values["select_probe_template"].value,
         )
 
-        # Set incomplete_labelling parameters when using simple probe selection
-        incomplete_labelling_fraction = probes_gui["incomplete_labelling_fraction"].value
-        incomplete_labelling_small = probes_gui["incomplete_labelling_small_cluster"].value
-        incomplete_labelling_large = probes_gui["incomplete_labelling_large_cluster"].value
+        # Set structural_integrity parameters when using simple probe selection
+        structural_integrity_fraction = probes_gui["structural_integrity_fraction"].value
+        structural_integrity_small = probes_gui["structural_integrity_small_cluster"].value
+        structural_integrity_large = probes_gui["structural_integrity_large_cluster"].value
 
-        if incomplete_labelling_fraction > 0 and incomplete_labelling_small > 0 and incomplete_labelling_large > 0:
-            experiment.incomplete_labelling_eps["incomplete_labelling"] = float(incomplete_labelling_fraction)
-            experiment.incomplete_labelling_eps["eps1"] = float(incomplete_labelling_small)
-            experiment.incomplete_labelling_eps["eps2"] = float(incomplete_labelling_large)
-            experiment.incomplete_labelling_eps["use_incomplete_labelling"] = True
+        if structural_integrity_fraction >= 0 and structural_integrity_small > 0 and structural_integrity_large > 0:
+            experiment.structural_integrity_eps["structural_integrity"] = float(structural_integrity_fraction)
+            experiment.structural_integrity_eps["eps1"] = float(structural_integrity_small)
+            experiment.structural_integrity_eps["eps2"] = float(structural_integrity_large)
+            experiment.structural_integrity_eps["use_structural_integrity"] = True
         else:
-            experiment.incomplete_labelling_eps["incomplete_labelling"] = 0.0
-            experiment.incomplete_labelling_eps["eps1"] = 100.0
-            experiment.incomplete_labelling_eps["eps2"] = 200.0
-            experiment.incomplete_labelling_eps["use_incomplete_labelling"] = False
+            experiment.structural_integrity_eps["structural_integrity"] = 0.0
+            experiment.structural_integrity_eps["eps1"] = 100.0
+            experiment.structural_integrity_eps["eps2"] = 200.0
+            experiment.structural_integrity_eps["use_structural_integrity"] = False
 
         probes_gui["create_particle"].disabled = False
         update_probe_list()
@@ -323,26 +323,26 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
             probe_wobble_theta = probes_gui["wobble_theta"].value
         else:
             probe_wobble_theta = None
-        # Handle incomplete_labelling parameters
-        incomplete_labelling_fraction = probes_gui["incomplete_labelling_fraction"].value
-        incomplete_labelling_small_cluster = probes_gui["incomplete_labelling_small_cluster"].value
-        incomplete_labelling_large_cluster = probes_gui["incomplete_labelling_large_cluster"].value
+        # Handle structural_integrity parameters
+        structural_integrity_fraction = probes_gui["structural_integrity_fraction"].value
+        structural_integrity_small_cluster = probes_gui["structural_integrity_small_cluster"].value
+        structural_integrity_large_cluster = probes_gui["structural_integrity_large_cluster"].value
 
-        # Set incomplete_labelling parameters in experiment if all are provided and non-zero
+        # Set structural_integrity parameters in experiment if all are provided and non-zero
         if (
-            incomplete_labelling_fraction > 0
-            and incomplete_labelling_small_cluster > 0
-            and incomplete_labelling_large_cluster > 0
+            structural_integrity_fraction >= 0
+            and structural_integrity_small_cluster > 0
+            and structural_integrity_large_cluster > 0
         ):
-            experiment.incomplete_labelling_eps["incomplete_labelling"] = float(incomplete_labelling_fraction)
-            experiment.incomplete_labelling_eps["eps1"] = float(incomplete_labelling_small_cluster)
-            experiment.incomplete_labelling_eps["eps2"] = float(incomplete_labelling_large_cluster)
-            experiment.incomplete_labelling_eps["use_incomplete_labelling"] = True
+            experiment.structural_integrity_eps["structural_integrity"] = float(structural_integrity_fraction)
+            experiment.structural_integrity_eps["eps1"] = float(structural_integrity_small_cluster)
+            experiment.structural_integrity_eps["eps2"] = float(structural_integrity_large_cluster)
+            experiment.structural_integrity_eps["use_structural_integrity"] = True
         else:
-            experiment.incomplete_labelling_eps["incomplete_labelling"] = 0.0
-            experiment.incomplete_labelling_eps["eps1"] = 100.0
-            experiment.incomplete_labelling_eps["eps2"] = 200.0
-            experiment.incomplete_labelling_eps["use_incomplete_labelling"] = False
+            experiment.structural_integrity_eps["structural_integrity"] = 0.0
+            experiment.structural_integrity_eps["eps1"] = 100.0
+            experiment.structural_integrity_eps["eps2"] = 200.0
+            experiment.structural_integrity_eps["use_structural_integrity"] = False
 
         if as_linker:
             options_per_type1["Primary_Probe"] = [
@@ -487,11 +487,11 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
 
     def clear_probes(b):
         experiment.remove_probes()
-        # Clear incomplete_labelling parameters when clearing probes
-        experiment.incomplete_labelling_eps["incomplete_labelling"] = 0.0
-        experiment.incomplete_labelling_eps["eps1"] = 20.0
-        experiment.incomplete_labelling_eps["eps2"] = 100.0
-        experiment.incomplete_labelling_eps["use_incomplete_labelling"] = False
+        # Clear structural_integrity parameters when clearing probes
+        experiment.structural_integrity_eps["structural_integrity"] = 0.0
+        experiment.structural_integrity_eps["eps1"] = 20.0
+        experiment.structural_integrity_eps["eps2"] = 100.0
+        experiment.structural_integrity_eps["use_structural_integrity"] = False
         probes_gui["message1"].value = "No probes selected yet."
         probes_gui["message2"].value = "No labelled structure created yet."
         probes_gui["add_probe"].disabled = False
@@ -716,36 +716,36 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         description="Save new fluorophore in local configuration",
         value=False,
     )
-    # incomplete_labelling parameters section
+    # structural_integrity parameters section
     probes_gui.add_HTML(
-        "incomplete_labelling_section_header",
-        "<hr> <b>Incomplete Labelling Parameters</b>",
+        "structural_integrity_section_header",
+        "<hr> <b>Structural Integrity Parameters</b>",
         style=dict(font_size="14px", color="darkblue"),
     )
     probes_gui.add_HTML(
-        "incomplete_labelling_info",
-        "Model Incomplete Labelling in the macromolecular complex. All three parameters must be set to enable this feature.",
+        "structural_integrity_info",
+        "Model Structural Integrity in the macromolecular complex. All three parameters must be set to enable this feature.",
         style=dict(font_size="12px", color="gray"),
     )
     probes_gui.add_float_slider(
-        "incomplete_labelling_fraction",
-        description="Incomplete Labelling fraction (0-1)",
+        "structural_integrity_fraction",
+        description="Structural Integrity fraction (0-1)",
         min=0.0,
         max=1.0,
-        value=0.0,
+        value=1.0,
         step=0.001,
         continuous_update=False,
         style={"description_width": "initial"},
     )
     probes_gui.add_float_text(
-        "incomplete_labelling_small_cluster",
+        "structural_integrity_small_cluster",
         description="Small cluster distance (Å)",
         value=100.0,
         continuous_update=False,
         style={"description_width": "initial"},
     )
     probes_gui.add_float_text(
-        "incomplete_labelling_large_cluster",
+        "structural_integrity_large_cluster",
         description="Large cluster distance (Å)",
         value=200.0,
         continuous_update=False,
@@ -834,21 +834,21 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         probe_widgets_visibility["create_fluorophore"] = (
             not probe_widgets_visibility["create_fluorophore"]
         )
-        # incomplete_labelling parameters visibility
-        probe_widgets_visibility["incomplete_labelling_section_header"] = (
-            not probe_widgets_visibility["incomplete_labelling_section_header"]
+        # structural_integrity parameters visibility
+        probe_widgets_visibility["structural_integrity_section_header"] = (
+            not probe_widgets_visibility["structural_integrity_section_header"]
         )
-        probe_widgets_visibility["incomplete_labelling_info"] = (
-            not probe_widgets_visibility["incomplete_labelling_info"]
+        probe_widgets_visibility["structural_integrity_info"] = (
+            not probe_widgets_visibility["structural_integrity_info"]
         )
-        probe_widgets_visibility["incomplete_labelling_fraction"] = (
-            not probe_widgets_visibility["incomplete_labelling_fraction"]
+        probe_widgets_visibility["structural_integrity_fraction"] = (
+            not probe_widgets_visibility["structural_integrity_fraction"]
         )
-        probe_widgets_visibility["incomplete_labelling_small_cluster"] = (
-            not probe_widgets_visibility["incomplete_labelling_small_cluster"]
+        probe_widgets_visibility["structural_integrity_small_cluster"] = (
+            not probe_widgets_visibility["structural_integrity_small_cluster"]
         )
-        probe_widgets_visibility["incomplete_labelling_large_cluster"] = (
-            not probe_widgets_visibility["incomplete_labelling_large_cluster"]
+        probe_widgets_visibility["structural_integrity_large_cluster"] = (
+            not probe_widgets_visibility["structural_integrity_large_cluster"]
         )
         probe_widgets_visibility["add_custom_probe"] = (
             not probe_widgets_visibility["add_custom_probe"]

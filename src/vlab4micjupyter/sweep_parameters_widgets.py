@@ -63,20 +63,20 @@ def format_parameter_name(param_name):
     Parameters
     ----------
     param_name : str
-        Parameter name with underscores (e.g., 'incomplete_labelling_small_cluster')
+        Parameter name with underscores (e.g., 'structural_integrity_small_cluster')
 
     Returns
     -------
     str
-        Formatted name in natural language (e.g., 'Incomplete Labelling Small Cluster')
+        Formatted name in natural language (e.g., 'Structural Integrity Small Cluster')
     """
     # Handle specific parameter name mappings
     name_mappings = {
         "labelling_efficiency": "Labeling Efficiency",
         "probe_distance_to_epitope": "Probe Distance to Epitope",
-        "incomplete_labelling_fraction": "Incomplete Labelling Fraction",
-        "incomplete_labelling_small_cluster": "Incomplete Labelling Small Cluster",
-        "incomplete_labelling_large_cluster": "Incomplete Labelling Large Cluster",
+        "structural_integrity_fraction": "Structural Integrity Fraction",
+        "structural_integrity_small_cluster": "Structural Integrity Small Cluster",
+        "structural_integrity_large_cluster": "Structural Integrity Large Cluster",
         "random_orientations": "Random Orientations",
         "number_of_particles": "Number of Particles",
         "exp_time": "Exposure Time",
@@ -676,12 +676,12 @@ def analyse_sweep(sweep_gen):
             analysis_widget["probe_parameters"].disabled = False
         else:
             analysis_widget["probe_parameters"].disabled = True
-        if sweep_gen.incomplete_labelling_parameters is not None and flag:
-            n_incomplete_labelling_parameters = len(sweep_gen.incomplete_labelling_parameters.keys())
-            analysis_widget["incomplete_labelling_parameters"].max = n_incomplete_labelling_parameters - 1
-            analysis_widget["incomplete_labelling_parameters"].disabled = False
+        if sweep_gen.structural_integrity_parameters is not None and flag:
+            n_structural_integrity_parameters = len(sweep_gen.structural_integrity_parameters.keys())
+            analysis_widget["structural_integrity_parameters"].max = n_structural_integrity_parameters - 1
+            analysis_widget["structural_integrity_parameters"].disabled = False
         else:
-            analysis_widget["incomplete_labelling_parameters"].disabled = True
+            analysis_widget["structural_integrity_parameters"].disabled = True
         if sweep_gen.vsample_parameters is not None and flag:
             n_vsample_parameters = len(sweep_gen.vsample_parameters.keys())
             analysis_widget["vsample_parameters"].max = n_vsample_parameters - 1
@@ -754,7 +754,7 @@ def analyse_sweep(sweep_gen):
         modality_template = analysis_widget["modality_template"].value
         probe_template = analysis_widget["probe_template"].value
         probe_parameters = analysis_widget["probe_parameters"].value
-        incomplete_labelling_parameters = analysis_widget["incomplete_labelling_parameters"].value
+        structural_integrity_parameters = analysis_widget["structural_integrity_parameters"].value
         vsample_parameters = analysis_widget["vsample_parameters"].value
         acquisition_parameters = analysis_widget[
             "acquisition_parameters"
@@ -765,7 +765,7 @@ def analyse_sweep(sweep_gen):
             modality_template=modality_template,
             probe_template=probe_template,
             probe_parameters=probe_parameters,
-            incomplete_labelling_parameters=incomplete_labelling_parameters,
+            structural_integrity_parameters=structural_integrity_parameters,
             virtual_sample_parameters=vsample_parameters,
             acquisition_parameters=acquisition_parameters,
             replica_number=replica_number,
@@ -783,7 +783,7 @@ def analyse_sweep(sweep_gen):
         text += "Modality: " + str(parameters[5])+ "<br>"
         text += "Probe: " + str(parameters[1])+ "<br>"
         text += "Probe Parameters: " + str(parameters[2])+ "<br>"
-        text += "Incomplete Labelling Parameters: " + str(parameters[3])+ "<br>"
+        text += "Structural Integrity Parameters: " + str(parameters[3])+ "<br>"
         text += "Virtual Sample Parameters: " + str(parameters[4])+ "<br>"
         text += "Modality Parameters: " + str(parameters[6])+ "<br>"
         text += "Acquisition Parameters: " + str(parameters[7])+ "<br>"
@@ -805,8 +805,8 @@ def analyse_sweep(sweep_gen):
         widgets_visibility["probe_parameters"] = not widgets_visibility[
             "probe_parameters"
         ]
-        widgets_visibility["incomplete_labelling_parameters"] = not widgets_visibility[
-            "incomplete_labelling_parameters"
+        widgets_visibility["structural_integrity_parameters"] = not widgets_visibility[
+            "structural_integrity_parameters"
         ]
         widgets_visibility["vsample_parameters"] = not widgets_visibility[
             "vsample_parameters"
@@ -856,8 +856,8 @@ def analyse_sweep(sweep_gen):
         continuous_update=False,
     )
     analysis_widget.add_int_slider(
-        "incomplete_labelling_parameters",
-        description="Incomplete Labelling parameter",
+        "structural_integrity_parameters",
+        description="Structural Integrity parameter",
         min=0,
         max=1,
         value=0,
@@ -891,7 +891,7 @@ def analyse_sweep(sweep_gen):
     analysis_widget["modality_template"].observe(update_plot, names="value")
     analysis_widget["probe_template"].observe(update_plot, names="value")
     analysis_widget["probe_parameters"].observe(update_plot, names="value")
-    analysis_widget["incomplete_labelling_parameters"].observe(update_plot, names="value")
+    analysis_widget["structural_integrity_parameters"].observe(update_plot, names="value")
     analysis_widget["vsample_parameters"].observe(update_plot, names="value")
     analysis_widget["acquisition_parameters"].observe(
         update_plot, names="value"
@@ -918,7 +918,7 @@ def analyse_sweep(sweep_gen):
     widgets_visibility["modality_template"] = False
     widgets_visibility["probe_template"] = False
     widgets_visibility["probe_parameters"] = False
-    widgets_visibility["incomplete_labelling_parameters"] = False
+    widgets_visibility["structural_integrity_parameters"] = False
     widgets_visibility["vsample_parameters"] = False
     widgets_visibility["acquisition_parameters"] = False
     widgets_visibility["replica_number"] = False
