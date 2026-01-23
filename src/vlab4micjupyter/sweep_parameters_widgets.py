@@ -627,17 +627,12 @@ def analyse_sweep(sweep_gen):
                 param2=param_names_set[1],
             )
         if analysis_widget["metric"].value == "All":
-            metric_list = ["ssim", "pearson"]
+            sweep_gen.use_default_metrics()
         elif analysis_widget["metric"].value == "SSIM":
-            metric_list = [
-                "ssim",
-            ]
+            sweep_gen.use_default_metrics(["ssim",])
         elif analysis_widget["metric"].value == "Pearson":
-            metric_list = [
-                "pearson",
-            ]
+            sweep_gen.use_default_metrics(["pearson",])
         sweep_gen.set_number_of_repetitions(analysis_widget["reps"].value)
-        sweep_gen.set_analysis_parameters(metrics_list=metric_list)
         with io.capture_output() as captured:
             if sweep_gen.reference_image is None:
                 sweep_gen.generate_reference_image()
@@ -722,9 +717,11 @@ def analyse_sweep(sweep_gen):
         description="Repeats per parameter combination",
         style={"description_width": "initial"},
     )
+    metric_options = list(sweep_gen.default_metrics.keys())
+    metric_options.append("All")
     analysis_widget.add_dropdown(
         "metric",
-        options=["SSIM", "Pearson", "All"],
+        options=metric_options,
         description="Metric for image comparison",
         disabled=False,
     )
