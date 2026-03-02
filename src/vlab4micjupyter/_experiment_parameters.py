@@ -84,11 +84,17 @@ def ui_select_structure(experiment):
         # elements["select_structure"].disabled = True
         for wgt in elements.keys():
             elements[wgt].disabled = True
-        experiment.structure_id = experiment.structures_info_list[
-            elements["structures"].value
-        ]
-        with io.capture_output() as captured:
-            experiment.build(modules="structure")
+        #experiment.structure_id = experiment.structures_info_list[
+        #    elements["structures"].value
+        #]
+        experiment.select_structure(
+            structure_id=experiment.structures_info_list[
+                elements["structures"].value
+            ],
+            build=True
+        )
+        #with io.capture_output() as captured:
+        #    experiment.build(modules="structure")
         update_structure_list()
         # elements["select_structure"].disabled = False
         elements["select_structure"].icon = select_icon
