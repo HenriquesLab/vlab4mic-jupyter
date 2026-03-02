@@ -184,11 +184,26 @@ def ui_show_structure(experiment):
         on_change=update_plot,
         continuous_update=False,
     )
+    def current_view_as_axis(widget_elements):
+        structure_axis_euler = [
+            widget_elements["hview"].value,
+            widget_elements["vview"].value,
+            0
+        ]
+        experiment.set_structure_axis_euler(*structure_axis_euler)
+
+    gui.add_callback(
+        tag="view_as_axis",
+        func=current_view_as_axis,
+        values=gui.elements,
+        description="Set current view as central axis"
+    )
 
     def enable_view_widgets(b):
         widgets_visibility["n_atoms"] = True
         widgets_visibility["hview"] = True
         widgets_visibility["vview"] = True
+        widgets_visibility["view_as_axis"] = True
         update_widgets_visibility(gui, widgets_visibility)
 
     # gui.add_button("show_structure", description="Show structure")
@@ -201,6 +216,7 @@ def ui_show_structure(experiment):
     widgets_visibility["n_atoms"] = False
     widgets_visibility["hview"] = False
     widgets_visibility["vview"] = False
+    widgets_visibility["view_as_axis"] = False
     update_widgets_visibility(gui, widgets_visibility)
 
     gui["preview_structure"].clear_output()
