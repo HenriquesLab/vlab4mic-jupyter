@@ -941,20 +941,16 @@ def ui_select_sample_parameters(experiment):
         continuous_update=False,
         style={"description_width": "initial"},
     )
-    sample_gui.add_checkbox(
-        "random_orientations", description="Randomise orientations", value=True
-    )
-    sample_gui.add_checkbox(
-        "random_rotations", description="Randomise rotations in plane", value=True
-    )
-    sample_gui.elements["advanced_parameters"] = widgets.Button(
-        description="Toggle advanced parameters",
-        icon=toggle_icon
-    )
     ####  advanced parameters ####
     sample_gui.add_HTML(
         tag="advanced_parameters_header",
-        value="<b>Option 1: Parameterise virtual sample dimensions and labelled particle placement </b>",
+        value="<b>Option 1: Parameterise virtual sample dimensions and labelled structure placement </b>",
+        style=dict(font_size="20px")
+    )
+    ####  sample dimensions parameters ####
+    sample_gui.add_HTML(
+        tag="dimensions_header",
+        value="<hr> <b>Virtual Sample dimensions</b>",
     )
     sample_gui.add_int_text(
         tag="sample_dimensionsXY",
@@ -966,10 +962,15 @@ def ui_select_sample_parameters(experiment):
         description = "Sample dimensions (Z, in nm)",
         value="100",
     )
+    ####  Labelled particle placing ####
+    sample_gui.add_HTML(
+        tag="positioning_header",
+        value="<hr> <b>Labelled structure positioning</b>",
+    )
     sample_gui.add_checkbox(
         "use_min_from_particle",
         value=True,
-        description="Use minimal distance from labelled particle dimensions",
+        description="Use minimal distance from labelled structure dimensions",
     )
     sample_gui.add_bounded_int_text(
         "minimal_distance_nm",
@@ -980,19 +981,38 @@ def ui_select_sample_parameters(experiment):
         step=1,
         style={"description_width": "initial"},
     )
-    sample_gui.add_HTML(
-        tag="rotations_header",
-        value="<b>Note:</b> For the following angles and Z offset parameters, specify the list of values to use by writing them as a comma-separated list (e.g. 20,24,45)",
+    sample_gui.add_checkbox(
+        "random",
+        value=True,
+        description="Randomise positions (enforced when there is more than one particle)",
+        style={"description_width": "initial"},
     )
     sample_gui.add_text(
-        tag="rotation_angles",
-        description = "Rotation angles (deg): ",
+        tag="axial_offset",
+        description = "Z offset (nm): ",
         value="",
+    )
+    ####  Labelled particle rotations and orientations ####
+    sample_gui.add_HTML(
+        tag="orientations_header",
+        value="<hr> <b>Orientations of the labelled structures.</b>",
+    )
+    sample_gui.add_HTML(
+        tag="orientations_options",
+        value="<i> Set a global orientation for all structures or specify rotation angles from which to sample orientations. </i> " \
+        "If a global orientation is set no random orientation will be generated.",
     )
     sample_gui.add_text(
         tag="sample_inital_orientation",
         description = "Global orientation of labelled structures (X,Y,Z)",
         value="",
+    )
+    sample_gui.add_HTML(
+        tag="rotations_header",
+        value="<b>Note:</b> For the following angles parameters, specify the list of values to use by writing them as a comma-separated list (e.g. 20,24,45)",
+    )
+    sample_gui.add_checkbox(
+        "random_orientations", description="Randomise orientations", value=True
     )
     sample_gui.add_text(
         tag="xy_orientations",
@@ -1009,21 +1029,26 @@ def ui_select_sample_parameters(experiment):
         description = "YZ angles (deg): ",
         value="",
     )
+    sample_gui.add_checkbox(
+        "random_rotations", description="Randomise rotations in plane", value=True
+    )
     sample_gui.add_text(
-        tag="axial_offset",
-        description = "Z offset (nm): ",
+        tag="rotation_angles",
+        description = "Rotation angles (deg): ",
         value="",
     )
-    sample_gui.add_checkbox(
-        "random",
-        value=True,
-        description="Randomise positions (enforced when there is more than one particle)",
-        style={"description_width": "initial"},
+    sample_gui.add_HTML(
+        tag="expansion_header",
+        value="<hr> <b>Expansion factor.</b>",
     )
     sample_gui.add_float_text(
         tag="expansion_factor",
         description = "Expansion Factor",
         value = 1,
+    )
+    sample_gui.elements["advanced_parameters"] = widgets.Button(
+        description="Toggle advanced parameters",
+        icon=toggle_icon
     )
     sample_gui.elements["update_sample_parameters"] = widgets.Button(
         description="Update sample parameters",
@@ -1039,6 +1064,7 @@ def ui_select_sample_parameters(experiment):
     sample_gui.add_HTML(
         tag="fileupload_header",
         value="<b>Option 2: Parameterise virtual sample from an image. </b>",
+        style=dict(font_size="20px")
     )
     sample_gui.add_HTML(
         tag="fileupload_header_note",
@@ -1213,17 +1239,33 @@ def ui_select_sample_parameters(experiment):
         widgets_visibility["advanced_parameters_header"] = (
             not widgets_visibility["advanced_parameters_header"]
         )
+        widgets_visibility["dimensions_header"] = not widgets_visibility[
+            "dimensions_header"
+        ]
         widgets_visibility["sample_dimensionsXY"] = not widgets_visibility[
             "sample_dimensionsXY"
         ]
         widgets_visibility["sample_dimensionsZ"] = not widgets_visibility[
             "sample_dimensionsZ"
         ]
+        widgets_visibility["positioning_header"] = not widgets_visibility[
+            "positioning_header"
+        ]
         widgets_visibility["minimal_distance_nm"] = not widgets_visibility[
             "minimal_distance_nm"
         ]
         widgets_visibility["use_min_from_particle"] = not widgets_visibility[
             "use_min_from_particle"
+        ]
+        widgets_visibility["orientations_header"] = not widgets_visibility[
+            "orientations_header"
+        ]
+        widgets_visibility["orientations_options"] = not widgets_visibility[
+            "orientations_options"
+        ]
+        
+        widgets_visibility["sample_inital_orientation"] = not widgets_visibility[
+            "sample_inital_orientation"
         ]
         widgets_visibility["rotations_header"] = not widgets_visibility[
             "rotations_header"
@@ -1242,6 +1284,9 @@ def ui_select_sample_parameters(experiment):
         ]
         widgets_visibility["axial_offset"] = not widgets_visibility[
             "axial_offset"
+        ]
+        widgets_visibility["expansion_header"] = not widgets_visibility[
+            "expansion_header"
         ]
         widgets_visibility["expansion_factor"] = not widgets_visibility[
             "expansion_factor"
