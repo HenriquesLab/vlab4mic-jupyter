@@ -990,6 +990,11 @@ def ui_select_sample_parameters(experiment):
         value="",
     )
     sample_gui.add_text(
+        tag="sample_inital_orientation",
+        description = "Global orientation of labelled structures (X,Y,Z)",
+        value="",
+    )
+    sample_gui.add_text(
         tag="xy_orientations",
         description = "XY angles (deg): ",
         value="",
@@ -1111,6 +1116,11 @@ def ui_select_sample_parameters(experiment):
         yz_orientations = None
         axial_offset = None
         minimal_distance = None
+        sample_inital_orientation_list = list(sample_gui["sample_inital_orientation"].value.split(","))
+        if len(sample_inital_orientation_list) == 3:
+            sample_inital_orientation = [float(x) for x in sample_inital_orientation_list ]
+        else:
+            sample_inital_orientation = None
         if random_rotations and sample_gui["rotation_angles"].value != "":
             # parse string
             rotation_angles_value = sample_gui["rotation_angles"].value
@@ -1151,7 +1161,8 @@ def ui_select_sample_parameters(experiment):
             xz_orientations=xz_orientations,
             yz_orientations=yz_orientations,
             axial_offset=axial_offset,
-            sample_dimensions=sample_dimensions
+            sample_dimensions=sample_dimensions,
+            sample_inital_orientation=sample_inital_orientation,
         )
         update_message()
 
