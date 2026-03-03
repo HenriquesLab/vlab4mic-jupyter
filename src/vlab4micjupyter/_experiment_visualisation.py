@@ -123,6 +123,7 @@ def ui_show_structure(experiment):
             vview = widget_elements["vview"].value
             widget_elements["n_atoms"].disabled = False
             atoms_number = widget_elements["n_atoms"].value
+            show_axis = widget_elements["show_central_axis"].value
             if total > atoms_number:
                 fraction = atoms_number / total
             else:
@@ -132,6 +133,7 @@ def ui_show_structure(experiment):
                     assembly_fraction=fraction,
                     view_init=[vview, hview, 0],
                     return_plot=True,
+                    show_axis = show_axis
                 )
             with widget_elements["preview_structure"]:
                 display(fig)
@@ -184,6 +186,11 @@ def ui_show_structure(experiment):
         on_change=update_plot,
         continuous_update=False,
     )
+    gui.add_checkbox(
+        tag="show_central_axis",
+        description="Show central axis",
+        value=False,
+        on_change=update_plot)
     def current_view_as_axis(widget_elements):
         structure_axis_euler = [
             widget_elements["hview"].value,
@@ -191,6 +198,7 @@ def ui_show_structure(experiment):
             0
         ]
         experiment.set_structure_axis_euler(*structure_axis_euler)
+        update_plot(True)
 
     gui.add_callback(
         tag="view_as_axis",
@@ -204,6 +212,7 @@ def ui_show_structure(experiment):
         widgets_visibility["hview"] = True
         widgets_visibility["vview"] = True
         widgets_visibility["view_as_axis"] = True
+        widgets_visibility["show_central_axis"] = True
         update_widgets_visibility(gui, widgets_visibility)
 
     # gui.add_button("show_structure", description="Show structure")
@@ -217,6 +226,7 @@ def ui_show_structure(experiment):
     widgets_visibility["hview"] = False
     widgets_visibility["vview"] = False
     widgets_visibility["view_as_axis"] = False
+    widgets_visibility["show_central_axis"] = False
     update_widgets_visibility(gui, widgets_visibility)
 
     gui["preview_structure"].clear_output()
