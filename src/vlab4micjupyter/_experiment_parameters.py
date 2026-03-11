@@ -544,6 +544,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         min=0.0,
         max=1.0,
         value=1,
+        step=0.1,
         continuous_update=False,
         style={"description_width": "initial"},
     )
@@ -553,6 +554,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         min=0.0,
         max=1000,
         value=1,
+        step=0.1,
         continuous_update=False,
         style={"description_width": "initial"},
     )
@@ -739,7 +741,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         min=0.0,
         max=1.0,
         value=1.0,
-        step=0.001,
+        step=0.1,
         continuous_update=False,
         style={"description_width": "initial"},
     )
@@ -1071,16 +1073,16 @@ def ui_select_sample_parameters(experiment):
         value="<b>Note:</b> The image will be used to detect particle positions based on intensity peaks.",
     )
     sample_gui.add_file_upload(
-        "File",
+        "Image1",
         description="Select from file",
-        accept="*.tif",
+        accept=["*.tif","*.tiff"],
         save_settings=False,
     )
-    sample_gui.add_bounded_int_text(
+    sample_gui.add_bounded_float_text(
         "pixel_size",
         description="Pixel size of image (nm)",
         value=100,
-        vmin=1,
+        vmin=0.01,
         vmax=1000,
         step=1,
         style={"description_width": "initial"},
@@ -1105,10 +1107,19 @@ def ui_select_sample_parameters(experiment):
     )
     sample_gui.add_bounded_int_text(
         "intensity_threshold",
-        description="Intensity threshold for particle detection)",
+        description="Intensity threshold for particle detection",
         value=0,
         vmin=0,
         vmax=10000,
+        step=1,
+        style={"description_width": "initial"},
+    )
+    sample_gui.add_bounded_float_text(
+        "min_distance_nm",
+        description="Minimal distance (nm)",
+        value=100,
+        vmin=0.01,
+        vmax=20000,
         step=1,
         style={"description_width": "initial"},
     )
@@ -1117,6 +1128,32 @@ def ui_select_sample_parameters(experiment):
         description="Detection method",
         options=["Local Maxima", "Mask"],
         value="Local Maxima",
+        style={"description_width": "initial"},
+    )
+    sample_gui.add_bounded_int_text(
+        "npositions",
+        description="Number of particles to place",
+        value=1,
+        vmin=0,
+        vmax=10000,
+        step=1,
+        style={"description_width": "initial"},
+    )
+    
+    # elevation image
+    sample_gui.add_file_upload(
+        "Image2",
+        description="Select from file",
+        accept=["*.tif","*.tiff"],
+        save_settings=False,
+    )
+    sample_gui.add_bounded_int_text(
+        "max_elevation",
+        description="Maximum elevation (nm)",
+        value=100,
+        vmin=0,
+        vmax=1000,
+        step=1,
         style={"description_width": "initial"},
     )
     sample_gui.elements["upload_and_set"] = widgets.Button(
@@ -1129,6 +1166,7 @@ def ui_select_sample_parameters(experiment):
         "advanced_params_feedback", "", style=dict(font_weight="bold")
     )
 
+    
     def update_parameters(b):
         random_rotations = sample_gui["random_rotations"].value
         random_orientations = sample_gui["random_orientations"].value
@@ -1202,10 +1240,17 @@ def ui_select_sample_parameters(experiment):
             update_message()
 
     def upload_and_set(b):
-        if sample_gui["File"].selected:
-            filepath = sample_gui["File"].selected
+        if sample_gui["Image1"].selected:
+            filepath = sample_gui["Image1"].selected
             img = tif.imread(filepath)
             pixelsize = sample_gui["pixel_size"].value
+            try:
+                filepath2 = sample_gui["Image2"].selected
+                img2 = tif.imread(filepath2)
+                max_elevation_nm = sample_gui["max_elevation"].value
+            except:
+                img2 = None
+                max_elevation_nm = None
             min_distance = None
             if sample_gui["detection_method"].value == "Local Maxima":
                 mode = "localmaxima"
@@ -1213,15 +1258,18 @@ def ui_select_sample_parameters(experiment):
                 mode = "mask"
             else:
                 raise ValueError("Unknown detection method selected.")
-            if sample_gui["use_min_from_particle"].value:
-                min_distance = experiment.virtualsample_params["minimal_distance"]
-            else:
-                min_distance = sample_gui["minimal_distance_nm"].value
+            if sample_gui["min_distance_nm"].value:
+                min_distance = sample_gui["min_distance_nm"].value
             sigma = sample_gui["blur_sigma"].value
             background = sample_gui["background_intensity"].value
             threshold = sample_gui["intensity_threshold"].value
-
-            npositions = sample_gui["number_of_particles"].value
+            positions_are_epitopes = True
+            normalise_elevation = True
+            npositions = sample_gui["npositions"].value
+            experiment.set_virtualsample_params(
+                random_orientations=False,
+                random_rotations=False,
+            )
             experiment.use_image_for_positioning(
                 img=img,
                 mode=mode,
@@ -1231,8 +1279,11 @@ def ui_select_sample_parameters(experiment):
                 pixelsize=pixelsize,
                 min_distance=min_distance,
                 npositions=npositions,
+                elevation_img=img2,
+                normalise_elevation=normalise_elevation,
+                max_elevation_nm=max_elevation_nm,
+                positions_are_epitopes=positions_are_epitopes,
             )
-            sample_gui.save_settings()
             update_message()
 
     def toggle_advanced_parameters(b):
@@ -1300,7 +1351,7 @@ def ui_select_sample_parameters(experiment):
         widgets_visibility["upload_and_set"] = not widgets_visibility[
             "upload_and_set"
         ]
-        widgets_visibility["File"] = not widgets_visibility["File"]
+        widgets_visibility["Image1"] = not widgets_visibility["Image1"]
         widgets_visibility["pixel_size"] = not widgets_visibility["pixel_size"]
         widgets_visibility["background_intensity"] = not widgets_visibility[
             "background_intensity"
@@ -1311,6 +1362,18 @@ def ui_select_sample_parameters(experiment):
         ]
         widgets_visibility["detection_method"] = not widgets_visibility[
             "detection_method"
+        ]
+        widgets_visibility["Image2"] = not widgets_visibility[
+            "Image2"
+        ]
+        widgets_visibility["max_elevation"] = not widgets_visibility[
+            "max_elevation"
+        ]
+        widgets_visibility["min_distance_nm"] = not widgets_visibility[
+            "min_distance_nm"
+        ]
+        widgets_visibility["npositions"] = not widgets_visibility[
+            "npositions"
         ]
         widgets_visibility["random"] = not widgets_visibility["random"]
         update_widgets_visibility(sample_gui, widgets_visibility)
