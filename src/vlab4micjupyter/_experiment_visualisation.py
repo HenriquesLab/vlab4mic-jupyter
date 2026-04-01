@@ -58,6 +58,7 @@ update_icon = "fa-wrench"  # create
 toggle_icon = "fa-eye-slash"
 upload_icon = "fa-upload"
 reset_icon = "fa-undo"
+relabel_icon = "fa-refresh"
 
 
 def update_widgets_visibility(ezwidget, visibility_dictionary):
@@ -249,9 +250,11 @@ def ui_show_labelled_structure(experiment):
     """
     gui = EZInput(title="Labelled Structure")
 
-    def show_particle(emitter_plotsize=1, source_plotsize=1, hview=0, vview=0):
+    def show_particle(emitter_plotsize=1, source_plotsize=1, hview=0, vview=0, relabel=False):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection="3d")
+        if relabel:
+            experiment.particle.generate_instance()
         experiment.particle.gen_axis_plot(
             axis_object=ax,
             with_sources=True,
@@ -283,9 +286,35 @@ def ui_show_labelled_structure(experiment):
                     )
                 )
 
+    def relabel_structure(change):
+        gui["preview_labelled_structure"].clear_output()
+        with gui["preview_labelled_structure"]:
+            if not experiment.objects_created["particle"]:
+                display("Particle not created yet, please create it first.")
+            else:
+                enable_view_widgets(True)
+                gui["emitter_plotsize"].disabled = False
+                gui["source_plotsize"].disabled = False
+                gui["hview"].disabled = False
+                gui["vview"].disabled = False
+                display(
+                    show_particle(
+                        emitter_plotsize=gui["emitter_plotsize"].value,
+                        source_plotsize=gui["source_plotsize"].value,
+                        hview=gui["hview"].value,
+                        vview=gui["vview"].value,
+                        relabel=True
+                    )
+                )
+
+
     gui.elements["show_labelled_structure"] = widgets.Button(
         description="Show labelled structure",
         icon=show_icon,
+    )
+    gui.elements["relabel_structure"] = widgets.Button(
+        description="Relabel structure and update plot",
+        icon=relabel_icon,
     )
     gui.add_int_slider(
         "emitter_plotsize",
@@ -337,9 +366,11 @@ def ui_show_labelled_structure(experiment):
         widgets_visibility["source_plotsize"] = True
         widgets_visibility["hview"] = True
         widgets_visibility["vview"] = True
+        widgets_visibility["relabel_structure"] = True
         update_widgets_visibility(gui, widgets_visibility)
 
     gui["show_labelled_structure"].on_click(show_labelled_structure)
+    gui["relabel_structure"].on_click(relabel_structure)
     gui.add_output("preview_labelled_structure")
     widgets_visibility = {}
     _unstyle_widgets(gui, widgets_visibility)
@@ -347,6 +378,7 @@ def ui_show_labelled_structure(experiment):
     widgets_visibility["source_plotsize"] = False
     widgets_visibility["hview"] = False
     widgets_visibility["vview"] = False
+    widgets_visibility["relabel_structure"] = False
     update_widgets_visibility(gui, widgets_visibility)
     return gui
 
