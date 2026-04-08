@@ -251,7 +251,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
     visibility_widgets = dict()
     probe_options = []
     probe_template_names = []
-    probe_template_names.append("Empty probe template")
+    probe_template_names.append("Direct probe (epitopes as emitters)")
     if (
         experiment.structure_id
         in experiment.config_probe_per_structure_names.keys()
@@ -295,13 +295,15 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
 
     def select_custom_probe(b):
         #probe_template = probes_gui["select_probe_template"].value
-        if probes_gui["select_custom_probe_template"].value == "Empty probe template":
+        if probes_gui["select_custom_probe_template"].value == "Direct probe (epitopes as emitters)":
+            probe_distance_to_epitope = 0
             probe_template = "NHS_ester" # minimal template 
         else:
             probe_template = probes_gui["select_custom_probe_template"].value
+            probe_distance_to_epitope = probes_gui["distance_from_epitope"].value
         probe_name = probes_gui["probe_name"].value
         labelling_efficiency = probes_gui["labelling_efficiency"].value
-        probe_distance_to_epitope = probes_gui["distance_from_epitope"].value
+        
         probe_target_type = options_dictionary[probes_gui["mock_type"].value]
         probe_target_value = probes_gui["mock_type_options1"].value
         probe_target_value2 = probes_gui["mock_type_options2"].value
@@ -448,7 +450,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         probe_template = probes_gui["select_probe_template"].value
         #probes_gui["probe_name"].value = probe_template
         if probe_template in experiment.config_probe_params.keys():
-            info_text = "<b>Target: </b>"
+            info_text = "<b>Target info: </b>"
             probe_info = experiment.config_probe_params[probe_template]
             if probe_info["target"]["type"] == "Atom_residue":
                 target_type = "residue"
@@ -463,8 +465,8 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
             else:
                 target_type = probe_info["target"]["type"]
                 target_value = probe_info["target"]["value"]
-                info_text += f"This probe model does not contain a target.<br> If selected, it will be assigned a random target from the selected structure.<br>"
-            info_text += f"<b>Probe Model: </b>{probe_info['model']['ID']}<br>"
+                info_text += f"This probe model does not specify a target epitope.<br> If selected, it will be assigned a random target from the selected structure.<br>"
+            info_text += f"<b>PDB Model for probe: </b>{probe_info['model']['ID']}<br>"
             probes_gui["probe_info"].value = info_text
         else:
             probes_gui["probe_info"].value = (
@@ -511,28 +513,78 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         "No probes selected yet.",
         style=dict(font_weight="bold", font_size="15px"),
     )
+    probes_gui.add_HTML(
+        "divisor1",
+        "<b></b> <hr> ",
+        style=dict(font_size="15px"),
+    )
+    probes_gui.add_HTML(
+        "divisor2",
+        "<b>Option 1: select an example probe </b>",
+        style=dict(font_size="15px"),
+    )
     probes_gui.add_dropdown(
         "select_probe_template",
-        description="Choose a probe:",
+        description="Example probes:",
         options=probe_options,
     )
     probes_gui.add_HTML("probe_info", "")
     probes_gui["select_probe_template"].observe(show_probe_info, names="value")
+    probes_gui.add_callback(
+        "add_probe",
+        select_probe,
+        probes_gui.elements,
+        description="Select example probe",
+        icon=add_icon,
+    )
+    probes_gui.add_HTML(
+        "divisor3",
+        "<b> </b> <hr> ",
+        style=dict(font_size="15px"),
+    )
+    probes_gui.add_HTML(
+        "divisor4",
+        "<b>Option 2: Create a probe </b>",
+        style=dict(font_size="15px"),
+    )
+    probes_gui.add_HTML(
+        "divisortext",
+        "Click on 'Create probe' to enable selection widgets. \n Notice that selecting a custom model overrides selections from option 1",
+        style=dict(font_size="15px"),
+    )
     probes_gui.elements["toggle_advanced_parameters"] = widgets.Button(
-        description="Toggle advanced parameters",
+        description="Create probe",
         icon=toggle_icon
     )
     # advanced parameters
     probes_gui.add_HTML(
         "advanced_param_header",
-        "<b>Advanced parameters</b> <hr> ",
-        style=dict(font_size="15px"),
+        "<b>Select a probe model</b> <hr> ",
+        style=dict(font_size="14px"),
     )
+    def show_custom_probe_info(change):
+        probe_template = probes_gui["select_custom_probe_template"].value
+        info_text = "   "
+        #probes_gui["probe_name"].value = probe_template
+        if probe_template in experiment.config_probe_params.keys():
+            probe_info = experiment.config_probe_params[probe_template]
+            if probe_info['model']['ID'] is not None:
+                info_text += f"<b>PDB Model for probe: </b>{probe_info['model']['ID']}<br>"
+            else:
+                info_text += "This probe model does not use a PDB structure"
+            probes_gui["custom_probe_info"].value = info_text
+        else:
+            probes_gui["custom_probe_info"].value = (
+                "This probe model does not use a PDB structure."
+            )
+
     probes_gui.add_dropdown(
         tag="select_custom_probe_template",
-        description="Choose a probe template:",
+        description="Choose a probe model:",
         options=probe_template_names,
     )
+    probes_gui.add_HTML("custom_probe_info", "")
+    probes_gui["select_custom_probe_template"].observe(show_custom_probe_info, names="value")
     probes_gui.add_text(
         tag="probe_name",
         value="Custom_Probe",
@@ -629,12 +681,17 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
     probes_gui.add_dropdown(
         "mock_type_options2",
         options=options_per_type2[probes_gui["mock_type"].value],
-        description="Where: ",
+        description="Region in peptide / Peptide chain: ",
+    )
+    probes_gui.add_HTML(
+        "epitope_options",
+        "<i>    Use the text field to specify parameters for Sequence or SiteSpecific. <br>" \
+        "Sequence: type the sequence in single-letter code. SiteSpecific: type the residue position.</i>",
     )
     probes_gui.add_text(
         "text_options",
         value=None,
-        description="Custom parameter"
+        description="Sequence / Position"
     )
     probes_gui.add_HTML(
         "as_linker_info",
@@ -761,7 +818,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
     )
 
     probes_gui.elements["add_custom_probe"] = widgets.Button(
-        description="Add probe with custom parameters",
+        description="Select custom probe",
         disabled=False,
         icon=add_icon
     )
@@ -775,6 +832,9 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         # Probe template selection visibility
         probe_widgets_visibility["select_custom_probe_template"] = (
             not probe_widgets_visibility["select_custom_probe_template"]
+        )
+        probe_widgets_visibility["custom_probe_info"] = (
+            not probe_widgets_visibility["custom_probe_info"]
         )
         probe_widgets_visibility["probe_name"] = not probe_widgets_visibility[
             "probe_name"
@@ -797,6 +857,9 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
         )
         probe_widgets_visibility["mock_type_options2"] = (
             not probe_widgets_visibility["mock_type_options2"]
+        )
+        probe_widgets_visibility["epitope_options"] = (
+            not probe_widgets_visibility["epitope_options"]
         )
         probe_widgets_visibility["text_options"] = (
             not probe_widgets_visibility["text_options"]
@@ -862,13 +925,10 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
             not probe_widgets_visibility["add_custom_probe"]
         )
         update_widgets_visibility(probes_gui, probe_widgets_visibility)
-
-    probes_gui.add_callback(
-        "add_probe",
-        select_probe,
-        probes_gui.elements,
-        description="Add probe (with defaults)",
-        icon=add_icon,
+    probes_gui.add_HTML(
+        "divisor5",
+        "<b></b> <hr> ",
+        style=dict(font_size="15px"),
     )
     probes_gui.elements["clear_probes"] = widgets.Button(
         description="Clear all probes",
@@ -889,6 +949,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
     probe_widgets_visibility = {}
     _unstyle_widgets(probes_gui, probe_widgets_visibility)
     show_probe_info(True)
+    show_custom_probe_info(True)
     probes_gui["create_particle"].on_click(create_particle)
     probes_gui["clear_probes"].on_click(clear_probes)
     probes_gui["toggle_advanced_parameters"].on_click(
