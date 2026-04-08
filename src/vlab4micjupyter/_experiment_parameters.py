@@ -274,21 +274,7 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
             probe_template=values["select_probe_template"].value,
         )
 
-        # Set structural_integrity parameters when using simple probe selection
-        structural_integrity_fraction = probes_gui["structural_integrity_fraction"].value
-        structural_integrity_small = probes_gui["structural_integrity_small_cluster"].value
-        structural_integrity_large = probes_gui["structural_integrity_large_cluster"].value
-
-        if structural_integrity_fraction >= 0 and structural_integrity_small > 0 and structural_integrity_large > 0:
-            experiment.structural_integrity_eps["structural_integrity"] = float(structural_integrity_fraction)
-            experiment.structural_integrity_eps["eps1"] = float(structural_integrity_small)
-            experiment.structural_integrity_eps["eps2"] = float(structural_integrity_large)
-            experiment.structural_integrity_eps["use_structural_integrity"] = True
-        else:
-            experiment.structural_integrity_eps["structural_integrity"] = 0.0
-            experiment.structural_integrity_eps["eps1"] = 100.0
-            experiment.structural_integrity_eps["eps2"] = 200.0
-            experiment.structural_integrity_eps["use_structural_integrity"] = False
+        experiment.set_structural_integrity(reset_parameters=True)
 
         probes_gui["create_particle"].disabled = False
         update_probe_list()
@@ -342,15 +328,13 @@ def ui_select_probe(experiment, local_configuration_dir = local_configuration_di
             and structural_integrity_small_cluster > 0
             and structural_integrity_large_cluster > 0
         ):
-            experiment.structural_integrity_eps["structural_integrity"] = float(structural_integrity_fraction)
-            experiment.structural_integrity_eps["eps1"] = float(structural_integrity_small_cluster)
-            experiment.structural_integrity_eps["eps2"] = float(structural_integrity_large_cluster)
-            experiment.structural_integrity_eps["use_structural_integrity"] = True
+            experiment.set_structural_integrity(
+                        structural_integrity=structural_integrity_fraction,
+                        structural_integrity_small_cluster=structural_integrity_small_cluster,
+                        structural_integrity_large_cluster=structural_integrity_large_cluster
+                    )
         else:
-            experiment.structural_integrity_eps["structural_integrity"] = 0.0
-            experiment.structural_integrity_eps["eps1"] = 100.0
-            experiment.structural_integrity_eps["eps2"] = 200.0
-            experiment.structural_integrity_eps["use_structural_integrity"] = False
+            experiment.set_structural_integrity(reset_parameters=True)
 
         if as_linker:
             options_per_type1["Primary_Probe"] = [
