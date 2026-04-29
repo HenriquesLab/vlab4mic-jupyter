@@ -1490,9 +1490,25 @@ def ui_select_modality(experiment):
 
     def update_modality_params(b):
         selected_modality = modality_gui["modality"].value
+        pixelsize_nm = modality_gui["pixelsize_nm"].value
+        lateral_resolution_nm = modality_gui["lateral_resolution_nm"].value
+        axial_resolution_nm = modality_gui["axial_resolution_nm"].value
+        psf_voxel_nm = modality_gui["psf_voxel_nm"].value
+        simulate_localistations = modality_gui["simulate_localistations"].value
+        lateral_precision = modality_gui["lateral_precision"].value
+        axial_precision = modality_gui["axial_precision"].value
+        nlocalisations = modality_gui["nlocalisations"].value
         if selected_modality != "All":
             experiment.update_modality(
                 modality_name=selected_modality,
+                pixelsize_nm=pixelsize_nm,
+                lateral_resolution_nm=lateral_resolution_nm,
+                axial_resolution_nm=axial_resolution_nm,
+                psf_voxel_nm=psf_voxel_nm,
+                simulate_localistations=simulate_localistations,
+                lateral_precision=lateral_precision,
+                axial_precision=axial_precision,
+                nlocalisations=nlocalisations,
                 depth_of_field_nm=modality_gui["psf_depth"].value,
             )
             update_message()
@@ -1628,10 +1644,38 @@ def ui_select_modality(experiment):
         layout=widgets.Layout(width="100%"),
         icon="eye-slash",
     )
+    ### Advanced parameters
     modality_gui.add_custom_widget(
         "toggle_advanced_parameters",
         widgets.HBox,
         children=[button_toggle_advanced_parameters],
+    )
+    modality_gui.add_bounded_int_text(
+        tag="pixelsize_nm",
+        description="Pixel size (nm)",
+        value=100,
+        vmin=0,
+        vmax=1000,
+        step=1,
+        style={"description_width": "initial"},
+    )
+    modality_gui.add_bounded_float_text(
+        tag="lateral_resolution_nm",
+        description="PSFσ in XY (nm)",
+        value=0.01,
+        vmin=0,
+        vmax=1000,
+        step=0.01,
+        style={"description_width": "initial"},
+    )
+    modality_gui.add_bounded_float_text(
+        tag="axial_resolution_nm",
+        description="PSFσ in Z (nm)",
+        value=0.01,
+        vmin=0,
+        vmax=1000,
+        step=0.01,
+        style={"description_width": "initial"},
     )
     modality_gui.add_int_slider(
         "psf_depth",
@@ -1641,6 +1685,49 @@ def ui_select_modality(experiment):
         step=10,
         value=100,
         continuous_update=False,
+        style={"description_width": "initial"},
+    )
+    modality_gui.add_bounded_int_text(
+        tag="psf_voxel_nm",
+        description="PSF sampling rate (nm)",
+        value=10,
+        vmin=1,
+        vmax=1000,
+        step=1,
+        style={"description_width": "initial"},
+    )
+    ### advanced params for locs
+    modality_gui.add_checkbox(
+        tag="simulate_localistations",
+        description = "Simulate localisations",
+        value=False,
+        style={"description_width": "initial"},
+    )
+    modality_gui.add_bounded_float_text(
+        tag="lateral_precision",
+        description="Lateral Precision for localisations (nm)",
+        value=0,
+        vmin=0,
+        vmax=1000,
+        step=0.01,
+        style={"description_width": "initial"},
+    )
+    modality_gui.add_bounded_float_text(
+        tag="axial_precision",
+        description="Axial Precision for localisations (nm)",
+        value=0,
+        vmin=0,
+        vmax=1000,
+        step=0.01,
+        style={"description_width": "initial"},
+    )
+    modality_gui.add_bounded_int_text(
+        tag="nlocalisations",
+        description="Number of localisations per emitter",
+        value=10,
+        vmin=1,
+        vmax=1000,
+        step=1,
         style={"description_width": "initial"},
     )
     modality_gui.add_custom_widget(
@@ -1683,13 +1770,33 @@ def ui_select_modality(experiment):
         ]
         widgets_visibility["preview_modality"] = not widgets_visibility[
             "preview_modality"
-        ]
+        ]   
         update_widgets_visibility(modality_gui, widgets_visibility)
 
     def toggle_advanced_parameters(b):
         widgets_visibility["psf_depth"] = not widgets_visibility["psf_depth"]
         widgets_visibility["update_modality_params"] = not widgets_visibility[
             "update_modality_params"
+        ]
+
+        widgets_visibility["pixelsize_nm"] = not widgets_visibility["pixelsize_nm"]
+        widgets_visibility["lateral_resolution_nm"] = not widgets_visibility[
+            "lateral_resolution_nm"
+        ]
+        widgets_visibility["axial_resolution_nm"] = not widgets_visibility[
+            "axial_resolution_nm"
+        ]
+        widgets_visibility["psf_voxel_nm"] = not widgets_visibility["psf_voxel_nm"]
+        widgets_visibility["simulate_localistations"] = not widgets_visibility[
+            "simulate_localistations"        ]
+        widgets_visibility["lateral_precision"] = not widgets_visibility[
+            "lateral_precision"
+        ]
+        widgets_visibility["axial_precision"] = not widgets_visibility[
+            "axial_precision"
+        ]
+        widgets_visibility["nlocalisations"] = not widgets_visibility[
+            "nlocalisations"
         ]
         update_widgets_visibility(modality_gui, widgets_visibility)
 
