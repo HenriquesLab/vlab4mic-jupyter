@@ -1582,7 +1582,8 @@ def ui_select_modality(experiment):
             modality_gui["lateral_resolution_nm"].value = psf_sd_metric[0]
             modality_gui["axial_resolution_nm"].value = psf_sd_metric[2]
             s3 = "Depth of field (nm): " + str(psf_depth)
-            modality_gui["psf_voxel_nm"].value = psf_depth
+            modality_gui["psf_depth"].value = psf_depth
+            modality_gui["psf_voxel_nm"].value = int(psf_voxel[0])
             s4 = "PSF preview (on a 1x1 µm field of view)"
             modality_gui["modality_info"].value = (
                 "<b>"
