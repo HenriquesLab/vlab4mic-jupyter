@@ -1539,7 +1539,6 @@ def ui_select_modality(experiment):
         modality_gui["select_modalities"].disabled = True
         modality_gui["modality"].disabled = True
 
-
     def update_plot(change):
         mod_name = modality_gui["modality"].value
 
@@ -1573,13 +1572,17 @@ def ui_select_modality(experiment):
             # mod info
             pixelsize = info["detector"]["pixelsize"]
             pixelsize_nm = pixelsize * 1000
+            modality_gui["pixelsize_nm"].value = int(pixelsize_nm)
             psf_voxel = np.array(info["psf_params"]["voxelsize"])
             psf_sd = np.array(info["psf_params"]["std_devs"])
             psf_depth = info["psf_params"]["depth"] * psf_voxel[0]
             s1 = "Detector pixelsize (nm): " + str(pixelsize_nm)
             psf_sd_metric = np.multiply(psf_voxel, psf_sd)
             s2 = "PSF sd (nm): " + str(psf_sd_metric)
+            modality_gui["lateral_resolution_nm"].value = psf_sd_metric[0]
+            modality_gui["axial_resolution_nm"].value = psf_sd_metric[2]
             s3 = "Depth of field (nm): " + str(psf_depth)
+            modality_gui["psf_voxel_nm"].value = psf_depth
             s4 = "PSF preview (on a 1x1 µm field of view)"
             modality_gui["modality_info"].value = (
                 "<b>"
@@ -1595,6 +1598,20 @@ def ui_select_modality(experiment):
                 + s4
                 + "</b><br>"
             )
+            lateral_precision = info["emitters"]["lateral_precision"]
+            axial_precision = info["emitters"]["axial_precision"]
+            nlocalisations = info["emitters"]["nlocalisations"]
+            if lateral_precision is not None and axial_precision is not None and nlocalisations is not None:
+                modality_gui["simulate_localistations"].value = simulate_localistations
+                modality_gui["lateral_precision"].value = lateral_precision
+                modality_gui["axial_precision"].value = axial_precision
+                modality_gui["nlocalisations"].value = nlocalisations
+            else:
+                simulate_localistations = False
+                modality_gui["lateral_precision"].value = 0
+                modality_gui["axial_precision"].value = 0
+                modality_gui["nlocalisations"].value = 1
+            
             modality_gui["preview_modality"].clear_output()
             with modality_gui["preview_modality"]:
                 display(
@@ -1679,7 +1696,7 @@ def ui_select_modality(experiment):
     )
     modality_gui.add_int_slider(
         "psf_depth",
-        description="PSF depth (nm)",
+        description="Depth of field (nm)",
         min=10,
         max=1000,
         step=10,
