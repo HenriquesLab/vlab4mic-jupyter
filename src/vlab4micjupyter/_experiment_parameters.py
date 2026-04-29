@@ -1602,15 +1602,12 @@ def ui_select_modality(experiment):
             axial_precision = info["emitters"]["axial_precision"]
             nlocalisations = info["emitters"]["nlocalisations"]
             if lateral_precision is not None and axial_precision is not None and nlocalisations is not None:
-                modality_gui["simulate_localistations"].value = simulate_localistations
+                modality_gui["simulate_localistations"].value = True
                 modality_gui["lateral_precision"].value = lateral_precision
                 modality_gui["axial_precision"].value = axial_precision
                 modality_gui["nlocalisations"].value = nlocalisations
             else:
-                simulate_localistations = False
-                modality_gui["lateral_precision"].value = 0
-                modality_gui["axial_precision"].value = 0
-                modality_gui["nlocalisations"].value = 1
+                modality_gui["simulate_localistations"].value = False
             
             modality_gui["preview_modality"].clear_output()
             with modality_gui["preview_modality"]:
