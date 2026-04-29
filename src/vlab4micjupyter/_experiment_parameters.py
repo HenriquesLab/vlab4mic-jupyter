@@ -1586,15 +1586,6 @@ def ui_select_modality(experiment):
             s4 = "PSF preview (on a 1x1 µm field of view)"
             modality_gui["modality_info"].value = (
                 "<b>"
-                + s1
-                + "</b><br>"
-                + "<b>"
-                + s2
-                + "</b><br>"
-                + "<b>"
-                + s3
-                + "</b><br>"
-                + "<b>"
                 + s4
                 + "</b><br>"
             )
@@ -1752,7 +1743,7 @@ def ui_select_modality(experiment):
         ],
     )
     button_toggle_preview = widgets.Button(
-        description="Toggle modality info and PSF preview",
+        description="Preview PSF",
         layout=widgets.Layout(width="100%"),
         icon="eye-slash",
     )
