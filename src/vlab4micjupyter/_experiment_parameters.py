@@ -1474,7 +1474,7 @@ def ui_select_modality(experiment):
     def update_message():
         text = ""
         for mod_name, params in experiment.imaging_modalities.items():
-            text += f" <b> - {mod_name} </b><br>"
+            text += f" <b>{mod_name}. </b>"
         modality_gui["message"].value = text
 
     def add_modality(b):
@@ -1642,9 +1642,6 @@ def ui_select_modality(experiment):
         layout=widgets.Layout(width="100%"),
         icon="fa-check",
     )
-    modality_gui.add_custom_widget(
-        "select_modalities", widgets.HBox, children=[select_modalities_button]
-    )
     button_toggle_advanced_parameters = widgets.Button(
         description="Toggle advanced parameters",
         layout=widgets.Layout(width="100%"),
@@ -1747,6 +1744,9 @@ def ui_select_modality(experiment):
         description="Preview PSF",
         layout=widgets.Layout(width="100%"),
         icon="eye-slash",
+    )
+    modality_gui.add_custom_widget(
+        "select_modalities", widgets.HBox, children=[select_modalities_button]
     )
     modality_gui.add_custom_widget(
         "toggle_preview", widgets.HBox, children=[button_toggle_preview]
