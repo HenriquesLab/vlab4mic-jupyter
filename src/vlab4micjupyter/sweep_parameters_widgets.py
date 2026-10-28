@@ -608,7 +608,7 @@ def analyse_sweep(sweep_gen):
         Widget for running analysis and saving results.
     """
     wgen = widgen()
-    ouput_directory = getattr(sweep_gen, "ouput_directory", ".")
+    output_directory = getattr(sweep_gen, "output_directory", None) or "."
     analysis_widget = EZInput(title="analysis")
 
     def analyse_sweep_action(b):
@@ -707,8 +707,10 @@ def analyse_sweep(sweep_gen):
         output_directory = analysis_widget["saving_directory"].selected_path
         output_name = analysis_widget["output_name"].value
         save_images = analysis_widget["save_images"].value
-        sweep_gen.ouput_directory = output_directory
-        sweep_gen.save_analysis(output_name=output_name)
+        sweep_gen.set_output_directory(output_directory=output_directory)
+        sweep_gen.save_analysis(
+            output_name=output_name, output_directory=output_directory
+        )
         if save_images:
             sweep_gen.save_images()
 
@@ -738,7 +740,7 @@ def analyse_sweep(sweep_gen):
     )
     analysis_widget.elements["outputs"] = widgets.Output()
     analysis_widget.elements["saving_directory"] = FileChooser(
-        ouput_directory,
+        output_directory,
         title="<b>Select output directory</b>",
         show_hidden=False,
         select_default=True,
